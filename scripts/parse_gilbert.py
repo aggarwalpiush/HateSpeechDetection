@@ -11,8 +11,8 @@ import os
 
 
 def main():
-    in_filepath = "/Users/aggarwalpiush/github_repos/HateSpeechDetection/HateSpeechDetection/raw_data/en/gilbert/hate-speech-dataset-master/annotations_metadata.csv"
-    heirarchical_path = "/Users/aggarwalpiush/github_repos/HateSpeechDetection/HateSpeechDetection/processed_data/en/gilbert/gilbert_hier.txt"
+    in_filepath = "../raw_data/en/gilbert/hate-speech-dataset-master/annotations_metadata.csv"
+    heirarchical_path = "../processed_data/en/gilbert/gilbert_hier.txt"
 
 
     with codecs.open(in_filepath, 'r', 'utf-8') as in_obj:

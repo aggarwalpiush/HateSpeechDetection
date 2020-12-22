@@ -5,8 +5,8 @@ import codecs
 
 
 def main():
-    in_filepath = "/Users/paggarwal/github_repos/HateSpeechDetection/raw_data/en/davidson/labeled_data.csv"
-    output_path = "/Users/paggarwal/github_repos/HateSpeechDetection/processed_data/en/davidson/labeled_data.csv"
+    in_filepath = "../raw_data/en/davidson/labeled_data.csv"
+    output_path = "../processed_data/en/davidson/labeled_data.csv"
 
     with codecs.open(in_filepath, 'r', 'utf-8') as in_obj:
         tweet = []
