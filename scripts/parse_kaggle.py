@@ -9,29 +9,26 @@ import os
 
 
 def main():
-    in_filepath = "../raw_data/en/ethos/Ethos_Dataset_Binary.csv"
-    heirarchical_path = "../processed_data/en/ethos/Ethos_Dataset_Binary_hier.txt"
+    in_filepath = "../raw_data/en/kaggle/impermium_verification_labels.csv"
+    heirarchical_path = "../processed_data/en/kaggle/kaggle_hier.txt"
 
 
     with codecs.open(in_filepath, 'r', 'utf-8') as in_obj:
-        ethos_rec = {}
-        ethos_rec['text'] = []
-        ethos_rec['label'] = []
+        kaggle_rec = {}
+        kaggle_rec['text'] = []
+        kaggle_rec['label'] = []
         for i, line in enumerate(in_obj):
             if i == 0:
                 continue
-            tokens = line.replace('\n', '').replace('\r', '').split(';')
-            ethos_rec['text'].append(';'.join(tokens[:-1]))
-            if float(tokens[-1]) >= 0.5:
-                ethos_rec['label'].append(1)
-            else:
-                ethos_rec['label'].append(0)
+            tokens = line.replace('\n', '').replace('\r', '').split(',')
+            kaggle_rec['text'].append(','.join(tokens[3:-1]))
+            kaggle_rec['label'].append(int(tokens[1]))
 
 
 
     with codecs.open(heirarchical_path, 'w', 'utf-8') as outfile:
-        for i, text in enumerate(ethos_rec['text']):
-            outfile.write(str(text) + '\t' + str(ethos_rec['label'][i]) + '\n')
+        for i, text in enumerate(kaggle_rec['text']):
+            outfile.write(str(text) + '\t' + str(kaggle_rec['label'][i]) + '\n')
 
 
     # stratified split

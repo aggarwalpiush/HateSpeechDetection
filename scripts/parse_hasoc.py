@@ -11,9 +11,9 @@ import os
 
 
 def main():
-    in_filepath1 = "/Users/aggarwalpiush/github_repos/HateSpeechDetection/HateSpeechDetection/raw_data/en/hasoc/english_dataset_2019/english_dataset.tsv"
-    in_filepath2 = "/Users/aggarwalpiush/github_repos/HateSpeechDetection/HateSpeechDetection/raw_data/en/hasoc/english_dataset_2019/hasoc2019_en_test-2919.tsv"
-    heirarchical_path = "/Users/aggarwalpiush/github_repos/HateSpeechDetection/HateSpeechDetection/processed_data/en/hasoc/hasoc_hier.txt"
+    in_filepath1 = "../raw_data/en/hasoc/english_dataset_2019/english_dataset_2019.tsv"
+    in_filepath2 = "../raw_data/en/hasoc/english_dataset_2019/hasoc2019_en_test-2919.tsv"
+    heirarchical_path = "../processed_data/en/hasoc/hasoc_hier.txt"
 
     hasoc_train_rec = {}
     hasoc_train_rec['text'] = []

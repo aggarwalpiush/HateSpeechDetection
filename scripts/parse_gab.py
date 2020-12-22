@@ -11,9 +11,8 @@ import os
 
 
 def main():
-    in_filepath = "/Users/aggarwalpiush/github_repos/HateSpeechDetection/HateSpeechDetection/raw_data/en/gab/GabHateCorpus_annotations.tsv"
-    output_path = "/Users/aggarwalpiush/github_repos/HateSpeechDetection/HateSpeechDetection/processed_data/en/gab/GabHateCorpus_annotations.jsonl"
-    heirarchical_path = "/Users/aggarwalpiush/github_repos/HateSpeechDetection/HateSpeechDetection/processed_data/en/gab/GabHateCorpus_annotations_hier.txt"
+    in_filepath = "../raw_data/en/gab/GabHateCorpus_annotations.tsv"
+    heirarchical_path = "../processed_data/en/gab/GabHateCorpus_annotations_hier.txt"
 
     gab_record = {}
     gab_text = {}
@@ -40,8 +39,6 @@ def main():
 
     json_entry = []
     for key, val in gab_record.items():
-        #print(key)
-        #print(val)
         required_format = {}
         required_format["text_id"] = int(key)
         required_format["Text"] = gab_text[key]
