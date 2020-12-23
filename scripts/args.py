@@ -29,9 +29,9 @@ def get_args():
     parser.add_argument('--hier_soc_file', type=str, default='../hierarchical_dict/soc.davidson_demo.txt')
     parser.add_argument('--hier_soc_ngram', type=int, default=3)
     parser.add_argument('--hier_soc_thld', type=int, default=-0.5)
-    parser.add_argument('--span', type=str, default='random', choices=['random', 'random_POS', 'all',
+    parser.add_argument('--span', type=str, default='random', choices=['original', 'random', 'random_POS', 'all',
                                                                     'dictionary', 'hierarchical'])
-    parser.add_argument('--obfuscation_strategy', type=str, default='camelcasing', choices=['camelcasing',
+    parser.add_argument('--obfuscation_strategy', type=str, default='camelcasing', choices=['original', 'camelcasing',
                         'snakecasing', 'spacing', 'voweldrop', 'random_masking', 'spelling', 'leetspeak', 'mathspeak',
                         'reversal', 'firstCharacter'])
     parser.add_argument('--dev_data', type=str, default='../processed_data/en/davidson/dev.txt')
@@ -40,6 +40,8 @@ def get_args():
     parser.add_argument('--max_features', type=int, default=50000)
     parser.add_argument('--max_len', type=int, default=100)
     parser.add_argument('--embed_size', type=int, default=300)
+    parser.add_argument('--model_path', type=int, default='../models/GradB_fasttext_original.pkl')
+    parser.add_argument('--evaluate_label_path', type=str, default='../results/GradB_fasttext_davidson_original_original.txt')
 
 
 
