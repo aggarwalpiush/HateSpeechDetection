@@ -27,7 +27,7 @@ args = get_args()
 
 def fit_train_save(pipe,parameters,X_train0, y_train0, model_name):
     model_filename = '../models/'+str(model_name)+'_'+str(args.vec_scheme)+'_'+\
-                     str(os.path.basename(os.path.dirname(args.train_path)))+\
+                     str(os.path.basename(os.path.dirname(args.train_data)))+\
                      '_'+str(args.span)+ '_' + str(args.obfuscation_strategy) + '.pkl'
     inner_cv = KFold(n_splits=5, shuffle=True, random_state=0)
     clf = GridSearchCV(estimator=pipe, param_grid=parameters, cv=inner_cv, n_jobs=54, verbose=1, scoring='f1')
