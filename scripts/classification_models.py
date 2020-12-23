@@ -76,7 +76,7 @@ parameters = [{
     'grad__max_features':['sqrt','log2',None]
 }]
 
-model, fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "GradB")
+fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "GradB")
 logging.info("GradB Model")
 logging.info("dataset name: %s", args.train_data)
 logging.info("Fit time : %s", fit_time)
