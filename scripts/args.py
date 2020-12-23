@@ -40,7 +40,7 @@ def get_args():
     parser.add_argument('--max_features', type=int, default=50000)
     parser.add_argument('--max_len', type=int, default=100)
     parser.add_argument('--embed_size', type=int, default=300)
-    parser.add_argument('--model_path', type=int, default='../models/GradB_fasttext_original_original.pkl')
+    parser.add_argument('--model_path', type=str, default='../models/GradB_fasttext_original_original.pkl')
     parser.add_argument('--evaluate_label_path', type=str, default='../results/GradB_fasttext_davidson_original_original.txt')
 
 
