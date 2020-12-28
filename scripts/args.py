@@ -42,6 +42,7 @@ def get_args():
     parser.add_argument('--embed_size', type=int, default=300)
     parser.add_argument('--model_path', type=str, default='../models/GradB_fasttext_original_original.pkl')
     parser.add_argument('--evaluate_label_path', type=str, default='../results/GradB_fasttext_davidson_original_original.txt')
+    parser.add_argument('--original_data', type=str, default='../processed_data/en/davidson/test.txt')
 
 
 

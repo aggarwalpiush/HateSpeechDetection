@@ -22,7 +22,8 @@ def main():
     y_preds = loaded_model.predict(X_test)
 
     with codecs.open(args.evaluate_label_path, 'w', 'utf-8') as result_obj:
-        result_obj.write(np.append(X_test, np.array(y_preds)))
+        for i, val in enumerate(X_test):
+            result_obj.write(str(val) + '\t' + str(y_preds[i]) + '\n')
 
 if __name__ == '__main__':
     main()
