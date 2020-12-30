@@ -11,7 +11,7 @@ args = get_args()
 
 
 def get_dataset(data_file):
-    df = pd.read_csv(training_file, sep="\t", names=['tweet', 'label'])
+    df = pd.read_csv(data_file, sep="\t", names=['tweet', 'label'])
     return df
 
 
@@ -26,7 +26,7 @@ def main():
     original_dataset = get_dataset(args.original_data)
     obfuscated_dataset = []
     for index, rows in original_dataset.iterrows():
-        print(rows['tweet'])
+        #print(rows['tweet'])
         # choose span from the input statement
         ss = Select_span(rows['tweet'], random_ngram=args.random_ngram, dict_file=args.dict_file,
                          is_hatebase=args.is_hatebase, hier_soc_file=args.hier_soc_file,
@@ -34,7 +34,7 @@ def main():
         # select random span
         try:
             span = ss.function_mapping[args.span](ss)
-            print(span+'\n\n')
+           # print(span+'\n\n')
             # select obfuscation strategy
 
             os = Obfuscation_strategies(span)
@@ -43,7 +43,7 @@ def main():
             obfuscated_dataset.append(rows['tweet'].replace(span, os.function_mapping[args.obfuscation_strategy](os))+ "\t" + str(rows['label']))
         except IndexError:
             obfuscated_dataset.append(rows['tweet'])
-    put_dataset(args.obfuscated_data_prefix + '_'.join([args.span, args.obfuscation_strategy]) + '_train.txt',
+    put_dataset(args.obfuscated_data_prefix + '_'.join([args.span, args.obfuscation_strategy]) + '_obfuscated.txt',
                     obfuscated_dataset)
 
 
