@@ -685,7 +685,7 @@ def main():
     test_tokenized = tk.texts_to_sequences(X_test)
     X_train = pad_sequences(train_tokenized, maxlen=max_len)
     X_valid = pad_sequences(valid_tokenized, maxlen=max_len)
-    X_test = pad_sequences(valid_tokenized, maxlen=max_len)
+    X_test = pad_sequences(test_tokenized, maxlen=max_len)
     embedding_matrix = create_embedding_matrix(args.vec_scheme, tk, max_features)
 
     model = cnn_attention_network(X_train, y_train, X_valid, y_dev, max_len, max_features, embed_size, embedding_matrix,
