@@ -14,10 +14,11 @@ args = get_args()
 
 arc_obj = Arc_preprocessor()
 
-def load_tab_data(filename = "../processed_data/en/davidson/train.txt", preprocessed=True):
+def load_tab_data(filename = "../processed_data/en/davidson/train.txt", preprocessed=True, test_file=False):
     data = pd.read_csv(filename, sep='\t', header=0,
                        names=['comment', 'isHate'])
-    data = shuffle(data)
+    if not test_file:
+        data = shuffle(data)
 
     XT = data['comment'].values
     X = []

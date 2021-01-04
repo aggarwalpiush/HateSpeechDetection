@@ -15,7 +15,7 @@ args = get_args()
 
 
 def main():
-    X_test, y_test = load_tab_data(filename=args.test_data, preprocessed=True)
+    X_test, y_test = load_tab_data(filename=args.test_data, preprocessed=True, test_file=True)
 
     loaded_model = pickle.load(open(args.model_path, 'rb'))
     a = time.time()
