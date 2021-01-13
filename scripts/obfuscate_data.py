@@ -21,19 +21,22 @@ def put_dataset(obfuscated_path, data):
         for line in data:
             ob_obj.write(line+"\n")
 
-OBFUSCATED_SPAN = ['original', 'random', 'random_POS', 'all', 'dictionary', 'hierarchical']
+OBFUSCATED_SPAN = [ 'random', 'random_POS', 'all', 'dictionary', 'hierarchical']
 
-OBFUSCATED_STRATEGY = ['original', 'camelcasing',
+OBFUSCATED_STRATEGY = [ 'camelcasing',
                         'snakecasing', 'spacing', 'voweldrop', 'random_masking', 'spelling', 'leetspeak', 'mathspeak',
                         'reversal', 'firstCharacter']
 
-
+from shutil import copyfile
 def main():
     # select dataset
     original_dataset = get_dataset(args.original_data)
-    obfuscated_dataset = []
+    copyfile(args.original_data, os.path.join(os.path.dirname(args.original_data),
+                                     os.path.basename(os.path.dirname(args.original_data)) + '_test_dataoriginal_original_obfuscated.txt'))
+
     for each_span in OBFUSCATED_SPAN:
         for each_strategy in OBFUSCATED_STRATEGY:
+            obfuscated_dataset = []
             for index, rows in original_dataset.iterrows():
                 # choose span from the input statement
                 ss = Select_span(rows['tweet'], random_ngram=args.random_ngram, dict_file=args.dict_file,
@@ -45,8 +48,8 @@ def main():
                     # select obfuscation strategy
 
                     obs = Obfuscation_strategies(span)
-                    obfuscated_dataset.append(rows['tweet'].replace(span, os.function_mapping[each_strategy](obs))+ "\t" + str(rows['label']))
-                except IndexError:
+                    obfuscated_dataset.append(rows['tweet'].replace(span, obs.function_mapping[each_strategy](obs))+ "\t" + str(rows['label']))
+                except (IndexError, TypeError, AttributeError):
                     obfuscated_dataset.append(rows['tweet'])
             put_dataset(os.path.join(os.path.dirname(args.original_data),
                                      os.path.basename(os.path.dirname(args.original_data)) +

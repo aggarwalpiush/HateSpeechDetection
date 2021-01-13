@@ -66,7 +66,11 @@ class Obfuscation_strategies(object):
         outputspan = self.inputspan
         if len_span > 2:
             random_rep_index = random.randint(1,len_span-2)
-            outputspan = outputspan.replace(outputspan[random_rep_index], '*')
+            try:
+                outputspan = outputspan.replace(outputspan[random_rep_index], '*')
+            except AttributeError:
+                outputspan = outputspan
+
         return outputspan
 
     def apply_spelling(self):
