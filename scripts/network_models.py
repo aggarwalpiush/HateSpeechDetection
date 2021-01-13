@@ -31,6 +31,7 @@ import os
 import wget
 import zipfile
 import logging
+from time import sleep
 logging.basicConfig(filename='../logs/network_models_results.log', filemode='a', format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',  datefmt='%H:%M:%S', level=logging.DEBUG)
 # specify GPU
 device = torch.device("cuda")
@@ -288,7 +289,7 @@ strategy = tf.distribute.MirroredStrategy()
 
 
 def cnn_attention_network(X_train, y_train, X_valid, y_valid, max_len, max_features, embed_size, embedding_matrix, lr=0.0, lr_d=0.0, spatial_dr=0.0, dense_units=128, conv_size=128, dr=0.2, patience=3):
-    file_path = f"best_model_cnn_network.hdf5"
+    file_path = f"../models/best_model_cnn_network.hdf5"
     check_point = ModelCheckpoint(file_path, monitor="val_accuracy", verbose=1, save_best_only=True, mode="max")
     early_stop = EarlyStopping(monitor="val_accuracy", mode="max", patience=patience)
     with strategy.scope():
@@ -315,11 +316,11 @@ def cnn_attention_network(X_train, y_train, X_valid, y_valid, max_len, max_featu
 
 
 def cnn_lstm_network(X_train, y_train, X_valid, y_valid, max_len, max_features, embed_size, embedding_matrix, lr=0.0, lr_d=0.0, spatial_dr=0.0, dense_units=128, conv_size=128, dr=0.2, patience=3):
-    file_path = f"best_model_cnn_lstm_network.hdf5"
+    file_path = f"../models/best_model_cnn_lstm_network.hdf5"
     check_point = ModelCheckpoint(file_path, monitor="val_accuracy", verbose=1,save_best_only=True, mode="max")
     early_stop = EarlyStopping(monitor="val_accuracy", mode="max", patience=patience)
     model = Sequential()
-    model.add(Embedding(max_features + 1, embed_size * 2, input_length=max_len, weights=[embedding_matrix], trainable=False))
+    model.add(Embedding(max_features + 1, embed_size, input_length=max_len, weights=[embedding_matrix], trainable=False))
     model.add(Conv1D(200, 10, activation='relu'))
     model.add(MaxPooling1D(pool_size=5))
     model.add(LSTM(100))
@@ -335,11 +336,11 @@ def cnn_lstm_network(X_train, y_train, X_valid, y_valid, max_len, max_features, 
 
 
 def lstm_network(X_train, y_train, X_valid, y_valid, max_len, max_features, embed_size, embedding_matrix, lr=0.0, lr_d=0.0, spatial_dr=0.0, dense_units=128, conv_size=128, dr=0.2, patience=3):
-    file_path = f"best_model_lstm_network.hdf5"
+    file_path = f"../models/best_model_lstm_network.hdf5"
     check_point = ModelCheckpoint(file_path, monitor="val_accuracy", verbose=1,save_best_only=True, mode="max")
     early_stop = EarlyStopping(monitor="val_accuracy", mode="max", patience=patience)
     main_input = Input(shape = (max_len,),name='main_input')
-    glove_Embed = (Embedding(max_features + 1, embed_size * 2, weights=[embedding_matrix], trainable=False))(main_input)
+    glove_Embed = (Embedding(max_features + 1, embed_size , weights=[embedding_matrix], trainable=False))(main_input)
     y = LSTM(300)(glove_Embed)
     y = Dense(200, activation='relu')(y)
     y = Dropout(rate=0.15)(y)
@@ -355,11 +356,11 @@ def lstm_network(X_train, y_train, X_valid, y_valid, max_len, max_features, embe
 
 
 def cnn_deep_lstm(X_train, y_train, X_valid, y_valid, max_len, max_features, embed_size, embedding_matrix, lr=0.0, lr_d=0.0, spatial_dr=0.0, dense_units=128, conv_size=128, dr=0.2, patience=3):
-    file_path = f"best_model_cnn_deep_lstm.hdf5"
+    file_path = f"../models/best_model_cnn_deep_lstm.hdf5"
     check_point = ModelCheckpoint(file_path, monitor="val_accuracy", verbose=1,save_best_only=True, mode="max")
     early_stop = EarlyStopping(monitor="val_accuracy", mode="max", patience=patience)
     main_input = Input(shape=(max_len,), dtype='int32', name='main_input')
-    glove_Embed = (Embedding(max_features + 1, embed_size * 2, input_length=max_len, weights=[embedding_matrix], trainable=False))(main_input)
+    glove_Embed = (Embedding(max_features + 1, embed_size, input_length=max_len, weights=[embedding_matrix], trainable=False))(main_input)
 
     x0 = Conv1D(128, 10, activation='relu')(glove_Embed)
     x1 = Conv1D(64, 5, activation='relu')(x0)
@@ -413,11 +414,11 @@ def cnn_deep_lstm(X_train, y_train, X_valid, y_valid, max_len, max_features, emb
 
 
 def bilstm_network(X_train, y_train, X_valid, y_valid, max_len, max_features, embed_size, embedding_matrix, lr=0.0, lr_d=0.0, spatial_dr=0.0, dense_units=128, conv_size=128, dr=0.2, patience=3):
-    file_path = f"best_model_bilstm_network.hdf5"
+    file_path = f"../models/best_model_bilstm_network.hdf5"
     check_point = ModelCheckpoint(file_path, monitor="val_accuracy", verbose=1,save_best_only=True, mode="max")
     early_stop = EarlyStopping(monitor="val_accuracy", mode="max", patience=patience)
     main_input = Input(shape=(max_len,), dtype='int32', name='main_input')
-    x = (Embedding(max_features + 1, embed_size*2, input_length=max_len, weights=[embedding_matrix], trainable=False))(main_input)
+    x = (Embedding(max_features + 1, embed_size, input_length=max_len, weights=[embedding_matrix], trainable=False))(main_input)
     x = SpatialDropout1D(0.3)(x)
     x = Bidirectional(LSTM(128, return_sequences=True))(x)
     x = Bidirectional(LSTM(128, return_sequences=True))(x)
@@ -438,12 +439,12 @@ def bilstm_network(X_train, y_train, X_valid, y_valid, max_len, max_features, em
 
 
 def bilstm_attention_network(X_train, y_train, X_valid, y_valid, max_len, max_features, embed_size, embedding_matrix, lr=0.0, lr_d=0.0, spatial_dr=0.0, dense_units=128, conv_size=128, dr=0.2, patience=3):
-    file_path = f"best_model_bilstm_attention_network.hdf5"
+    file_path = f"../models/best_model_bilstm_attention_network.hdf5"
     check_point = ModelCheckpoint(file_path, monitor="val_accuracy", verbose=1,save_best_only=True, mode="max")
     early_stop = EarlyStopping(monitor="val_accuracy", mode="max", patience=patience)
     with strategy.scope():
         main_input = Input(shape=(max_len,), name='main_input')
-        x = (Embedding(max_features + 1, embed_size*2, input_length=max_len, weights=[embedding_matrix], trainable=False))(main_input)
+        x = (Embedding(max_features + 1, embed_size, input_length=max_len, weights=[embedding_matrix], trainable=False))(main_input)
         x = SpatialDropout1D(0.2)(x)
         x = Bidirectional(LSTM(128, return_sequences=True))(x)
         x = Bidirectional(LSTM(128, return_sequences=True))(x)
@@ -474,6 +475,9 @@ def bert_network(X_train, y_train, X_dev, y_dev, X_test, y_test, epochs=10):
         param.requires_grad = False  # freeze all the parameters
     # pass the pre-trained BERT to our define architecture
     model = BERT_Arch(bert)
+
+    #no accumulation
+    #model.zero_grad()
 
     # push the model to GPU
     model = model.to(device)
@@ -580,15 +584,15 @@ def bert_network(X_train, y_train, X_dev, y_dev, X_test, y_test, epochs=10):
         print('\n Epoch {:} / {:}'.format(epoch + 1, epochs))
 
         # train model
-        train_loss, _ = train(train_dataloader, model, cross_entropy)
+        train_loss, _ = train(train_dataloader, model, cross_entropy, optimizer)
 
         # evaluate model
-        valid_loss, _ = evaluate(val_dataloader, model, cross_entropy, optimizer)
+        valid_loss, _ = evaluate(val_dataloader, model, cross_entropy)
 
         # save the best model
         if valid_loss < best_valid_loss:
             best_valid_loss = valid_loss
-            torch.save(model.state_dict(), 'saved_weights_bert.pt')
+            torch.save(model.state_dict(), '../models/saved_weights_bert.pt')
 
         # append training and validation loss
         train_losses.append(train_loss)
@@ -597,7 +601,7 @@ def bert_network(X_train, y_train, X_dev, y_dev, X_test, y_test, epochs=10):
         print(f'\nTraining Loss: {train_loss:.3f}')
         print(f'Validation Loss: {valid_loss:.3f}')
 
-    path = 'saved_weights_bert.pt'
+    path = '../models/saved_weights_bert.pt'
     model.load_state_dict(torch.load(path))
 
 
@@ -673,20 +677,26 @@ def main():
     max_features = args.max_features
     max_len = args.max_len
     embed_size = args.embed_size
-    X_train, y_train = load_tab_data(filename=args.train_data, preprocessed=True)
+    X_train_o, y_train = load_tab_data(filename=args.train_data, preprocessed=True)
 
-    X_dev, y_dev = load_tab_data(filename=args.dev_data, preprocessed=True)
 
-    X_test, y_test = load_tab_data(filename=args.test_data, preprocessed=True)
+    X_dev_o, y_dev = load_tab_data(filename=args.dev_data, preprocessed=True)
+
+
+    X_test_o, y_test = load_tab_data(filename=args.test_data, preprocessed=True)
+
     tk = Tokenizer(lower=True, filters='', num_words=max_features, oov_token=True)
-    tk.fit_on_texts(X_train)
-    train_tokenized = tk.texts_to_sequences(X_train)
-    valid_tokenized = tk.texts_to_sequences(X_dev)
-    test_tokenized = tk.texts_to_sequences(X_test)
+    tk.fit_on_texts(X_train_o)
+    train_tokenized = tk.texts_to_sequences(X_train_o)
+    valid_tokenized = tk.texts_to_sequences(X_dev_o)
+    test_tokenized = tk.texts_to_sequences(X_test_o)
     X_train = pad_sequences(train_tokenized, maxlen=max_len)
     X_valid = pad_sequences(valid_tokenized, maxlen=max_len)
     X_test = pad_sequences(test_tokenized, maxlen=max_len)
+
     embedding_matrix = create_embedding_matrix(args.vec_scheme, tk, max_features)
+
+
 
     model = cnn_attention_network(X_train, y_train, X_valid, y_dev, max_len, max_features, embed_size, embedding_matrix,
                       lr=1e-3, lr_d=0, spatial_dr=0.1, dense_units=128, conv_size=128, dr=0.1, patience=4)
@@ -743,7 +753,8 @@ def main():
     logging.info("F1 Score: %s", f1)
     logging.info("Score_time : %s", score_time)
 
-    f1, pred_time = bert_network(X_train, y_train, X_valid, y_dev, X_test, y_test, epochs=10)
+
+    f1, pred_time = bert_network(X_train_o, y_train, X_dev_o, y_dev, X_test_o, y_test, epochs=10)
 
     logging.info("F1 Score: %s", f1)
     logging.info("Score_time : %s", pred_time)
