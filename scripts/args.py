@@ -21,7 +21,7 @@ def get_args():
     parser = ArgumentParser(description='choose your training data to obfuscate')
 
     # model parameters
-    parser.add_argument('--train_data', type=str, default='../processed_data/en/davidson/obfuscated_random_voweldrop_train.txt')
+    parser.add_argument('--train_data', type=str, default='../processed_data/en/davidson/train.txt')
     parser.add_argument('--obfuscated_data_prefix', type=str, default='../processed_data/en/davidson/obfuscated_')
     parser.add_argument('--random_ngram', type=int, default=1)
     parser.add_argument('--dict_file', type=str, default='../dictionaries/hurtlex_lex.txt')
@@ -36,6 +36,7 @@ def get_args():
                         'reversal', 'firstCharacter'])
     parser.add_argument('--dev_data', type=str, default='../processed_data/en/davidson/dev.txt')
     parser.add_argument('--test_data', type=str, default='../processed_data/en/davidson/test.txt')
+    parser.add_argument('--test_path', type=str, default='../processed_data/en/davidson')
     parser.add_argument('--vec_scheme', type=str, default='fasttext', choices=['tfidf', 'fasttext', 'glove'])
     parser.add_argument('--max_features', type=int, default=50000)
     parser.add_argument('--max_len', type=int, default=100)
@@ -43,6 +44,7 @@ def get_args():
     parser.add_argument('--model_path', type=str, default='../models/GradB_fasttext_original_original.pkl')
     parser.add_argument('--evaluate_label_path', type=str, default='../results/GradB_fasttext_davidson_original_original.txt')
     parser.add_argument('--original_data', type=str, default='../processed_data/en/davidson/test.txt')
+    parser.add_argument('--only_test', type=bool, default=False)
 
 
 

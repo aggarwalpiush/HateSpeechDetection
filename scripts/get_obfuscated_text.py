@@ -114,6 +114,12 @@ class Obfuscation_strategies(object):
         '''
         return self.inputspan[0].upper()
 
+    def apply_original(self):
+        '''
+        return original input
+        '''
+        return self.inputspan
+
     function_mapping = {
         'camelcasing': apply_camelcasing,
         'snakecasing' : apply_snakecasing,
@@ -124,7 +130,8 @@ class Obfuscation_strategies(object):
         'leetspeak': apply_leetspeak,
         'mathspeak': apply_mathspeak,
         'reversal': apply_reversal,
-        'firstCharacter': apply_firstCharacter
+        'firstCharacter': apply_firstCharacter,
+        'original': apply_original
     }
 
 
@@ -213,7 +220,14 @@ class Select_span(object):
                 hierarchical_obfuscated_text.append(lex)
         return hierarchical_obfuscated_text
 
+    def apply_original(self):
+        '''
+        return original input
+        '''
+        return self.inputtext
+
     function_mapping = {
+        'original': apply_original,
         'random': apply_random,
         'random_POS': apply_random_POS,
         'all': apply_all,

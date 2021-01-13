@@ -6,6 +6,7 @@ import codecs
 import pandas as pd
 import argparse
 from args import get_args
+import os
 
 args = get_args()
 
@@ -20,31 +21,37 @@ def put_dataset(obfuscated_path, data):
         for line in data:
             ob_obj.write(line+"\n")
 
+OBFUSCATED_SPAN = ['original', 'random', 'random_POS', 'all', 'dictionary', 'hierarchical']
+
+OBFUSCATED_STRATEGY = ['original', 'camelcasing',
+                        'snakecasing', 'spacing', 'voweldrop', 'random_masking', 'spelling', 'leetspeak', 'mathspeak',
+                        'reversal', 'firstCharacter']
+
 
 def main():
     # select dataset
     original_dataset = get_dataset(args.original_data)
     obfuscated_dataset = []
-    for index, rows in original_dataset.iterrows():
-        #print(rows['tweet'])
-        # choose span from the input statement
-        ss = Select_span(rows['tweet'], random_ngram=args.random_ngram, dict_file=args.dict_file,
-                         is_hatebase=args.is_hatebase, hier_soc_file=args.hier_soc_file,
-                         hier_soc_ngram=args.hier_soc_ngram, hier_soc_thld=args.hier_soc_thld)
-        # select random span
-        try:
-            span = ss.function_mapping[args.span](ss)
-           # print(span+'\n\n')
-            # select obfuscation strategy
+    for each_span in OBFUSCATED_SPAN:
+        for each_strategy in OBFUSCATED_STRATEGY:
+            for index, rows in original_dataset.iterrows():
+                # choose span from the input statement
+                ss = Select_span(rows['tweet'], random_ngram=args.random_ngram, dict_file=args.dict_file,
+                                 is_hatebase=args.is_hatebase, hier_soc_file=args.hier_soc_file,
+                                 hier_soc_ngram=args.hier_soc_ngram, hier_soc_thld=args.hier_soc_thld)
+                # select random span
+                try:
+                    span = ss.function_mapping[each_span](ss)
+                    # select obfuscation strategy
 
-            os = Obfuscation_strategies(span)
-
-            #print(rows['tweet'].replace(span, os.function_mapping[args.obfuscation_strategy](os)))
-            obfuscated_dataset.append(rows['tweet'].replace(span, os.function_mapping[args.obfuscation_strategy](os))+ "\t" + str(rows['label']))
-        except IndexError:
-            obfuscated_dataset.append(rows['tweet'])
-    put_dataset(args.obfuscated_data_prefix + '_'.join([args.span, args.obfuscation_strategy]) + '_obfuscated.txt',
-                    obfuscated_dataset)
+                    obs = Obfuscation_strategies(span)
+                    obfuscated_dataset.append(rows['tweet'].replace(span, os.function_mapping[each_strategy](obs))+ "\t" + str(rows['label']))
+                except IndexError:
+                    obfuscated_dataset.append(rows['tweet'])
+            put_dataset(os.path.join(os.path.dirname(args.original_data),
+                                     os.path.basename(os.path.dirname(args.original_data)) +
+                                     '_test_data' + '_'.join([each_span, each_strategy]) + '_obfuscated.txt'),
+                            obfuscated_dataset)
 
 
 if __name__ == '__main__':
