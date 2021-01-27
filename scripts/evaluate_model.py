@@ -21,6 +21,7 @@ args = get_args()
 def main():
     for model in glob(os.path.join(args.model_path, '*.pkl')):
         for test_file in glob(os.path.join(args.test_path, '*test_data*obfuscated.txt')):
+            print(test_file)
             X_test, y_test = load_tab_data(filename=test_file, preprocessed=True, test_file=True)
 
             loaded_model = pickle.load(open(model, 'rb'))
@@ -34,20 +35,20 @@ def main():
                 for i, val in enumerate(X_test):
                     result_obj.write(str(val) + '\t' + str(y_preds[i]) + '\n')
 
-            y_preds = []
+            y_pred = []
             for i in y_preds:
                 if i >= 0.5:
-                    y_preds.append(1)
+                    y_pred.append(1)
                 else:
-                    y_preds.append(0)
+                    y_pred.append(0)
             logging.info("=================================START====================================")
-            logging.info("Model name: %s", os.path.basename(args.model_path).replace('.pkl', ''))
+            logging.info("Model name: %s", os.path.basename(model).replace('.pkl', ''))
             logging.info("Test file : %s", result_file)
-            logging.info("F1 Score: %s", f1_score(y_test, y_preds))
-            logging.info("Score_time : %s", score_time)
-            logging.info("Confusion Matrix : %s", confusion_matrix(y_test, y_preds))
+            logging.info("F1 Score: %s", f1_score(y_test, y_pred))
+            logging.info("Score_time : %s\n", score_time)
+            logging.info("Confusion Matrix : %s", confusion_matrix(y_test, y_pred))
             target_names = ['Non-hate', 'hate']
-            logging.info("Classification Report : %s", classification_report(y_test, y_preds, target_names=target_names))
+            logging.info("Classification Report : %s", classification_report(y_test, y_pred, target_names=target_names))
             logging.info("=================================END====================================\n\n")
 
 

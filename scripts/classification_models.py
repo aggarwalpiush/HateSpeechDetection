@@ -145,9 +145,9 @@ Run AdaBoost
 ada = AdaBoostClassifier()
 pipe = Pipeline(steps=[('vec', vec), ('ada', ada)])
 parameters = [{
-    'vec__ngram_range':[(1,1),(1,2),(1,5)],
-    'vec__max_features':[5000,10000,50000,100000],
-    'vec__stop_words':['english', None],
+   # 'vec__ngram_range':[(1,1),(1,2),(1,5)],
+   # 'vec__max_features':[5000,10000,50000,100000],
+   # 'vec__stop_words':['english', None],
     'ada__base_estimator':[None,DecisionTreeClassifier(max_depth=10),LogisticRegression(C=100)],
     'ada__n_estimators':[10,50,100,300],
     'ada__learning_rate':[0.0001,0.01,0.5,1]
@@ -164,9 +164,9 @@ Run GradBoost
 grad = GradientBoostingClassifier()
 pipe = Pipeline(steps=[('vec', vec), ('grad', grad)])
 parameters = [{
-    'vec__ngram_range':[(1,1),(1,2),(1,5)],
-    'vec__max_features':[5000,10000,50000,100000],
-    'vec__stop_words':['english', None],
+   # 'vec__ngram_range':[(1,1),(1,2),(1,5)],
+   # 'vec__max_features':[5000,10000,50000,100000],
+   # 'vec__stop_words':['english', None],
     'grad__learning_rate':[0.0001,0.01,0.1,0.5,1],
     'grad__n_estimators':[10,50,100,300],
     'grad__subsample':[0.7,0.85,1],
@@ -183,9 +183,9 @@ Run Bagging
 bag = BaggingClassifier(n_jobs=-1)
 pipe = Pipeline(steps=[('vec', vec), ('bag', bag)])
 parameters = [{
-    'vec__ngram_range':[(1,1),(1,2),(1,5)],
-    'vec__max_features':[5000,10000,50000,100000],
-    'vec__stop_words':['english', None],
+#    'vec__ngram_range':[(1,1),(1,2),(1,5)],
+ #   'vec__max_features':[5000,10000,50000,100000],
+  #  'vec__stop_words':['english', None],
     'bag__base_estimator':[None,DecisionTreeClassifier(max_depth=10),LogisticRegression(C=100)],
     'bag__n_estimators':[10,50,100,300],
     'bag__max_samples':[0.7,0.85,1],

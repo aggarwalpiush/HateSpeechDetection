@@ -79,10 +79,10 @@ parameters = [{
     'grad__max_features': ['sqrt']
 }]
 
-fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "GradB")
-logging.info("GradB Model")
-logging.info("dataset name: %s", args.train_data)
-logging.info("Fit time : %s", fit_time)
+#fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "GradB")
+#logging.info("GradB Model")
+#logging.info("dataset name: %s", args.train_data)
+#logging.info("Fit time : %s", fit_time)
 
 
 
@@ -106,10 +106,10 @@ parameters = [{
     'log__solver': ['saga'],
     'log__penalty': ['l1']
 }]
-fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "LogReg")
-logging.info("LogReg Model")
-logging.info("dataset name: %s", args.train_data)
-logging.info("Fit time : %s", fit_time)
+#fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "LogReg")
+#logging.info("LogReg Model")
+#logging.info("dataset name: %s", args.train_data)
+#logging.info("Fit time : %s", fit_time)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Run SVM
@@ -130,10 +130,10 @@ parameters = [{
     'svm__C': [ 10]
 }]
 
-fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "svm")
-logging.info("SVM Model")
-logging.info("dataset name: %s", args.train_data)
-logging.info("Fit time : %s", fit_time)
+#fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "svm")
+#logging.info("SVM Model")
+#logging.info("dataset name: %s", args.train_data)
+#logging.info("Fit time : %s", fit_time)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Run RandomForest
@@ -152,10 +152,10 @@ parameters = [{
     'randFor__bootstrap': [True],
     'randFor__n_estimators': [100]
 }]
-fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "randforest")
-logging.info("Randforest Model")
-logging.info("dataset name: %s", args.train_data)
-logging.info("Fit time : %s", fit_time)
+#fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "randforest")
+#logging.info("Randforest Model")
+#logging.info("dataset name: %s", args.train_data)
+#logging.info("Fit time : %s", fit_time)
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -163,7 +163,8 @@ Run AdaBoost
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 ada = AdaBoostClassifier()
 pipe = Pipeline(steps=[('vec', vec), ('ada', ada)])
-parameters = [{
+if args.vec_scheme == 'TF_IDF': 
+    parameters = [{
     #'vec__ngram_range':[(1,1),(1,2),(1,5)],
     #'vec__max_features':[5000,10000,50000,100000],
     #'vec__stop_words':['english', None],
@@ -171,12 +172,24 @@ parameters = [{
     #'ada__n_estimators':[10,50,100,300],
     #'ada__learning_rate':[0.0001,0.01,0.5,1]
     'vec__ngram_range': [ (1, 2)],
-    'vec__max_features': [10000],
     'vec__stop_words': ['english'],
     'ada__base_estimator': [None, DecisionTreeClassifier(max_depth=10), LogisticRegression(C=100)],
     'ada__n_estimators': [50],
     'ada__learning_rate': [0.01]
-}]
+    }]
+elif args.vec_scheme == 'fasttext':
+    parameters = [{
+    #'vec__ngram_range':[(1,1),(1,2),(1,5)],
+    #'vec__max_features':[5000,10000,50000,100000],
+    #'vec__stop_words':['english', None],
+    #'ada__base_estimator':[None,DecisionTreeClassifier(max_depth=10),LogisticRegression(C=100)],
+    #'ada__n_estimators':[10,50,100,300],
+    #'ada__learning_rate':[0.0001,0.01,0.5,1]
+    'ada__base_estimator': [None, DecisionTreeClassifier(max_depth=10), LogisticRegression(C=100)],
+    'ada__n_estimators': [50],
+    'ada__learning_rate': [0.01]
+    }]
+
 fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "AdaB")
 logging.info("AdaBoost Model")
 logging.info("dataset name: %s", args.train_data)
@@ -188,7 +201,8 @@ Run GradBoost
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 grad = GradientBoostingClassifier()
 pipe = Pipeline(steps=[('vec', vec), ('grad', grad)])
-parameters = [{
+if args.vec_scheme == 'TF_IDF':
+    parameters = [{
     #'vec__ngram_range':[(1,1),(1,2),(1,5)],
     #'vec__max_features':[5000,10000,50000,100000],
     #'vec__stop_words':['english', None],
@@ -196,14 +210,28 @@ parameters = [{
     #'grad__n_estimators':[10,50,100,300],
     #'grad__subsample':[0.7,0.85,1],
     #'grad__max_features':['sqrt','log2',None]
-    'vec__ngram_range': [ (1, 2) ],
-    'vec__max_features': [10000],
+    'vec__ngram_range': [ (1, 2)],
     'vec__stop_words': ['english'],
     'grad__learning_rate': [0.01],
     'grad__n_estimators': [50],
     'grad__subsample': [0.85],
     'grad__max_features': ['sqrt']
-}]
+    }]
+elif args.vec_scheme == 'fasttext':
+    parameters = [{
+    #'vec__ngram_range':[(1,1),(1,2),(1,5)],
+    #'vec__max_features':[5000,10000,50000,100000],
+    #'vec__stop_words':['english', None],
+    #'grad__learning_rate':[0.0001,0.01,0.1,0.5,1],
+    #'grad__n_estimators':[10,50,100,300],
+    #'grad__subsample':[0.7,0.85,1],
+    #'grad__max_features':['sqrt','log2',None]
+    'grad__learning_rate': [0.01],
+    'grad__n_estimators': [50],
+    'grad__subsample': [0.85],
+    'grad__max_features': ['sqrt']
+    }]
+ 
 fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "grad")
 logging.info("GradBoost Model")
 logging.info("dataset name: %s", args.train_data)
@@ -214,7 +242,8 @@ Run Bagging
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 bag = BaggingClassifier(n_jobs=-1)
 pipe = Pipeline(steps=[('vec', vec), ('bag', bag)])
-parameters = [{
+if args.vec_scheme == 'TF_IDF':
+    parameters = [{
     #'vec__ngram_range': [(1, 1), (1, 2), (1, 5)],
     #'vec__max_features': [5000, 10000, 50000, 100000],
     #'vec__stop_words': ['english', None],
@@ -224,14 +253,29 @@ parameters = [{
     #'bag__max_features': [0.5, 0.75, 1],
     #'bag__bootstrap': [True, False]
     'vec__ngram_range':[(1,2)],
-    'vec__max_features':[10000],
     'vec__stop_words':['english'],
     'bag__base_estimator':[None,DecisionTreeClassifier(max_depth=10),LogisticRegression(C=100)],
     'bag__n_estimators':[50],
     'bag__max_samples':[0.85],
     'bag__max_features':[0.75],
     'bag__bootstrap':[True]
-}]
+    }]
+elif args.vec_scheme == 'fasttext':
+    parameters = [{
+    #'vec__ngram_range': [(1, 1), (1, 2), (1, 5)],
+    #'vec__max_features': [5000, 10000, 50000, 100000],
+    #'vec__stop_words': ['english', None],
+    #'bag__base_estimator': [None, DecisionTreeClassifier(max_depth=10), LogisticRegression(C=100)],
+    #'bag__n_estimators': [10, 50, 100, 300],
+    #'bag__max_samples': [0.7, 0.85, 1],
+    #'bag__max_features': [0.5, 0.75, 1],
+    #'bag__bootstrap': [True, False]
+    'bag__base_estimator':[None,DecisionTreeClassifier(max_depth=10),LogisticRegression(C=100)],
+    'bag__n_estimators':[50],
+    'bag__max_samples':[0.85],
+    'bag__max_features':[0.75],
+    'bag__bootstrap':[True]
+    }]
 fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "bag")
 logging.info("Bagging Model")
 logging.info("dataset name: %s", args.train_data)

@@ -7,6 +7,7 @@ import pandas as pd
 import argparse
 from args import get_args
 import os
+from nltk.tokenize import TweetTokenizer
 
 args = get_args()
 
@@ -23,9 +24,13 @@ def put_dataset(obfuscated_path, data):
 
 OBFUSCATED_SPAN = [ 'random', 'random_POS', 'all', 'dictionary', 'hierarchical']
 
+#OBFUSCATED_SPAN = ['hierarchical']
+
 OBFUSCATED_STRATEGY = [ 'camelcasing',
                         'snakecasing', 'spacing', 'voweldrop', 'random_masking', 'spelling', 'leetspeak', 'mathspeak',
                         'reversal', 'firstCharacter']
+
+#OBFUSCATED_STRATEGY = ['spelling', 'reversal', 'firstCharacter']
 
 from shutil import copyfile
 def main():
@@ -46,16 +51,22 @@ def main():
                 try:
                     span = ss.function_mapping[each_span](ss)
                     # select obfuscation strategy
-
                     obs = Obfuscation_strategies(span)
-                    obfuscated_dataset.append(rows['tweet'].replace(span, obs.function_mapping[each_strategy](obs))+ "\t" + str(rows['label']))
-                except (IndexError, TypeError, AttributeError):
-                    obfuscated_dataset.append(rows['tweet'])
+                    obfuscated_statement = str(rows['tweet'])
+                    if isinstance(span, str):
+                        span = [span]
+                    for i, entity in enumerate(span):
+                        #print(entity)
+                        #print(obs.function_mapping[each_strategy](obs)[i])
+                        if entity in TweetTokenizer().tokenize(obfuscated_statement):
+                            obfuscated_statement = obfuscated_statement.replace(entity, obs.function_mapping[each_strategy](obs)[i])
+                    obfuscated_dataset.append(obfuscated_statement + "\t" + str(rows['label']))
+                except (IndexError):
+                    obfuscated_dataset.append(rows['tweet']+ "\t" + str(rows['label']))
             put_dataset(os.path.join(os.path.dirname(args.original_data),
                                      os.path.basename(os.path.dirname(args.original_data)) +
                                      '_test_data' + '_'.join([each_span, each_strategy]) + '_obfuscated.txt'),
                             obfuscated_dataset)
-
 
 if __name__ == '__main__':
     main()

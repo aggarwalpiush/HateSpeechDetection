@@ -7,70 +7,92 @@ from nltk.tokenize import TweetTokenizer
 import nltk
 from get_hatebase_terms import extract_terms_from_json, get_lexicons
 from get_interpretable_spans import get_span
+from args import get_args
+import os
+
+args = get_args()
+
 
 
 AVAILABLE_OBFUSCATION = ['camelcasing', 'snakecasing', 'spacing', 'voweldrop', 'masking', 'spelling', 'leetspeak',
                          'mathspeak', 'reversal', 'firstcharacter']
 
-
+LEXICON_LIST = get_span(args.hier_soc_file, args.hier_soc_ngram, args.hier_soc_thld)
 
 class Obfuscation_strategies(object):
     def __init__(self, inputspan):
         self.inputspan = inputspan
+        if isinstance(self.inputspan, str):
+            self.inputspan = [self.inputspan]
 
 
     def apply_camelcasing(self):
         outputspan = []
-        for i in range(len(self.inputspan)):
-            if not i%2 == 0:
-                outputspan.append(self.inputspan[i].capitalize())
-            else:
-                outputspan.append(self.inputspan[i])
-        return ''.join(outputspan)
+        for each_span in self.inputspan:
+            outspan = []
+            for i in range(len(each_span)):
+                if not i%2 == 0:
+                    outspan.append(each_span[i].capitalize())
+                else:
+                    outspan.append(each_span[i])
+            outputspan.append(''.join(outspan))
+        return outputspan
 
     def apply_snakecasing(self):
         outputspan = []
-        for i in range(len(self.inputspan)):
-            if not i == 0:
-                outputspan.append('_'+ str(self.inputspan[i]))
-            else:
-                outputspan.append(self.inputspan[i])
-        return ''.join(outputspan)
+        for each_span in self.inputspan:
+            outspan = []
+            for i in range(len(each_span)):
+                if not i == 0:
+                    outspan.append('_'+ str(each_span[i]))
+                else:
+                    outspan.append(each_span[i])
+            outputspan.append(''.join(outspan))
+        return outputspan
 
 
     def apply_spacing(self):
         outputspan = []
-        for i in range(len(self.inputspan)):
-            if not i == 0:
-                outputspan.append(' '+ str(self.inputspan[i]))
-            else:
-                outputspan.append(self.inputspan[i])
-        return ''.join(outputspan)
+        for each_span in self.inputspan:
+            outspan = []
+            for i in range(len(each_span)):
+                if not i == 0:
+                    outspan.append(' '+ str(each_span[i]))
+                else:
+                    outspan.append(each_span[i])
+            outputspan.append(''.join(outspan))
+        return outputspan
+
 
     def apply_voweldrop(self):
         vowels = ('a', 'e', 'i', 'o', 'u')
         outputspan = []
-        for i in self.inputspan:
-            if not i in vowels:
-                outputspan.append(i)
-            else:
-                continue
-        return ''.join(outputspan)
+        for each_span in self.inputspan:
+            outspan = []
+            for i in each_span:
+                if not i in vowels:
+                    outspan.append(i)
+                else:
+                    continue
+            outputspan.append(''.join(outspan))
+        return outputspan
 
     def apply_random_masking(self):
         '''
         masking is done just by selecting random in-characters of the word having
         more than 2 character, such words are replaced by asterisk
         '''
-        len_span = len(self.inputspan)
-        outputspan = self.inputspan
-        if len_span > 2:
-            random_rep_index = random.randint(1,len_span-2)
-            try:
-                outputspan = outputspan.replace(outputspan[random_rep_index], '*')
-            except AttributeError:
-                outputspan = outputspan
-
+        outputspan = []
+        for each_span in self.inputspan:
+            len_span = len(each_span)
+            outspan = each_span
+            if len_span > 2:
+                random_rep_index = random.randint(1,len_span-2)
+                try:
+                    outspan = outspan.replace(outspan[random_rep_index], '*')
+                except AttributeError:
+                    outspan = outspan
+            outputspan.append(outspan)
         return outputspan
 
     def apply_spelling(self):
@@ -78,14 +100,21 @@ class Obfuscation_strategies(object):
         two random in-characters are chosen from the word having more than 3 characters
         and do the replacements.
         '''
-        len_span = len(self.inputspan)
-        outputspan = self.inputspan
-        if len_span > 3:
-            random_rep_index1 = random.choice(range(1,len_span-2))
-            random_rep_index2 = random.choice(range(1, len_span - 2))
-            exchange_char1 = outputspan[random_rep_index1]
-            outputspan = outputspan.replace(outputspan[random_rep_index1], outputspan[random_rep_index2])
-            outputspan = outputspan.replace(outputspan[random_rep_index2], exchange_char1)
+        outputspan = []
+        for each_span in self.inputspan:
+            len_span = len(each_span)
+            outspan = each_span
+            if len_span > 3:
+                random_rep_index1 = random.choice(range(1,len_span-1))
+                random_rep_index2 = random.choice(range(1, len_span - 1))
+                while random_rep_index1 == random_rep_index2:
+                    random_rep_index2 = random.choice(range(1, len_span - 1))
+                temp = list(outspan)
+                pivot = temp[random_rep_index1]
+                temp[random_rep_index1] = outspan[random_rep_index2]
+                temp[random_rep_index2] = pivot
+                outspan = "".join(temp)
+            outputspan.append(outspan)
         return outputspan
 
 
@@ -93,30 +122,43 @@ class Obfuscation_strategies(object):
         '''
         replacing character a,e,l,o,s  with integers
         '''
-        getchar = lambda c: chars[c] if c in chars else c
-        chars = {"a":"4","e":"3","l":"1","o":"0","s":"5"}
-        return ''.join(getchar(c) for c in self.inputspan)
+        outputspan = []
+        for each_span in self.inputspan:
+            getchar = lambda c: chars[c] if c in chars else c
+            chars = {"a":"4","e":"3","l":"1","o":"0","s":"5"}
+            outputspan.append(''.join(getchar(c) for c in each_span))
+        return outputspan
 
 
     def apply_mathspeak(self):
         '''
         replacing ascii character with mathematical symbols
         '''
-        getchar = lambda c: chars[c] if c in chars else c
-        chars = {"C":"ℂ","N":"ℕ","Q":"ℚ","R":"ℝ","Z":"ℤ","M":"ℳ","L":"ℒ","l":"ℓ","E":"ℰ","a":"α","B":"β","y":"γ","p":"ρ"}
-        return ''.join(getchar(c) for c in self.inputspan)
+        outputspan = []
+        for each_span in self.inputspan:
+            getchar = lambda c: chars[c] if c in chars else c
+            chars = {"C":"ℂ","N":"ℕ","Q":"ℚ","R":"ℝ","Z":"ℤ","M":"ℳ","L":"ℒ","l":"ℓ","E":"ℰ","a":"α","B":"β","y":"γ","p":"ρ"}
+            outputspan.append(''.join(getchar(c) for c in each_span))
+        return outputspan
+
 
     def apply_reversal(self):
         '''
         token reversal
         '''
-        return self.inputspan[::-1]
+        outputspan = []
+        for each_span in self.inputspan:
+            outputspan.append(each_span[::-1])
+        return outputspan
 
     def apply_firstCharacter(self):
         '''
         take just first character of the word in capital case
         '''
-        return self.inputspan[0].upper()
+        outputspan = []
+        for each_span in self.inputspan:
+            outputspan.append(each_span[0].upper())
+        return outputspan
 
     def apply_original(self):
         '''
@@ -167,7 +209,7 @@ class Select_span(object):
         random_rep_index = random.choice(text_range)
         if random_rep_index == 0:
             random_rep_index += 1
-        return ' '.join(filter_short_tokens[random_rep_index - self.random_ngram: random_rep_index])
+        return filter_short_tokens[random_rep_index - self.random_ngram: random_rep_index]
 
     def apply_random_POS(self):
         '''
@@ -179,12 +221,14 @@ class Select_span(object):
         # apply tweet tokenizer
         # apply pos tagging
         pos_tags = nltk.pos_tag(self.tokenized_input)
+        count = 0 
         for i, tag_pair in pos_tags:
-            if i != 0 and i != len(pos_tags) -1:
+            if count != 0 and count != len(pos_tags) -1:
                 if tag_pair in ['VB', 'JJ', 'JJR', 'JJS', 'NN', 'NNS', 'NNP', 'NNPS', 'VBD', 'VBG', 'VBN',
                                          'VBP', 'VBZ']:
-                    if len(tag_pair[0]) > 3:
-                        eligible_pos.append(tag_pair[0])
+                    if len(i) > 3:
+                        eligible_pos.append(i)
+            count += 1
         return random.choice(eligible_pos)
 
     def apply_all(self):
@@ -218,8 +262,8 @@ class Select_span(object):
         '''
         hierarchical_obfuscated_text = []
 
-        lexicon_list = get_span(self.hier_soc_file, self.hier_soc_ngram, self.hier_soc_thld)
-        for lex in lexicon_list:
+        #lexicon_list = get_span(self.hier_soc_file, self.hier_soc_ngram, self.hier_soc_thld)
+        for lex in LEXICON_LIST:
             if lex in self.inputtext.lower():
                 hierarchical_obfuscated_text.append(lex)
         return hierarchical_obfuscated_text
