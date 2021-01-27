@@ -328,24 +328,24 @@ def bert_network(X_train, y_train, X_dev, y_dev, epochs=10):
         y_test = y_test
         y_preds = np.argmax(preds, axis=1)
         result_file = os.path.join(args.evaluate_label_path, os.path.basename(test_file).replace('.txt', '') + '_' +
-                                   os.path.basename(args.train_data) + 'bert_network_predictions.txt')
+                                   os.path.basename(args.train_data) + '_bert_network_predictions.txt')
 
         with codecs.open(result_file, 'w', 'utf-8') as result_obj:
             for i, val in enumerate(X_test_o):
                 result_obj.write(str(val) + '\t' + str(y_preds[i]) + '\n')
 
-        y_preds = []
+        y_pred = []
         for i in y_preds:
             if i >= 0.5:
-                y_preds.append(1)
+                y_pred.append(1)
             else:
-                y_preds.append(0)
+                y_pred.append(0)
         logging.info("Test file : %s", result_file)
-        logging.info("F1 Score: %s", f1_score(y_test, y_preds))
+        logging.info("F1 Score: %s", f1_score(y_test, y_pred))
         logging.info("Score_time : %s", score_time)
-        logging.info("Confusion Matrix : %s", confusion_matrix(y_test, y_preds))
+        logging.info("Confusion Matrix : %s", confusion_matrix(y_test, y_pred))
         target_names = ['Non-hate', 'hate']
-        logging.info("Classification Report : %s", classification_report(y_test, y_preds, target_names=target_names))
+        logging.info("Classification Report : %s", classification_report(y_test, y_pred, target_names=target_names))
 
     logging.info("==================================END======================================\n\n")
 
