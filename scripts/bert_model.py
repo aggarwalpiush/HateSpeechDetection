@@ -270,6 +270,7 @@ if not args.only_test:
         end_time = time.time()
         epoch_mins, epoch_secs = epoch_time(start_time, end_time)
         print(f'Time: {epoch_mins}m {epoch_secs}s')
+    torch.save(model.state_dict(), '../models/saved_weights_bert.pt')
     fit_time = time.time() - a
 
     logging.info("=================================START====================================\n")
