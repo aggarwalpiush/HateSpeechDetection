@@ -91,7 +91,7 @@ att_masks1 = []
 for ids in text_ids1:
     masks = [int(id > 0) for id in ids]
     att_masks1.append(masks)
-:
+
 
 
 att_masks2 = []
@@ -303,7 +303,7 @@ print ("Test Accuracy:", test_accuracy)
 
 from sklearn.metrics import classification_report
 
-print(classification_report(true_values, predicted_values, target_names=[str(l) for l in label_values]))
+print(classification_report(true_values, predicted_values, target_names=['non-hate', 'hate']))
 
 
 
