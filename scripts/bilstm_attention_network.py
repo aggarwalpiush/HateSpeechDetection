@@ -420,92 +420,21 @@ def main():
     embedding_matrix = create_embedding_matrix(args.vec_scheme, tk, max_features)
 
 
-    # CNN ATTENTION NETWORK
+
+
+    # BILSTM ATTENTION
 
     a = time.time()
-    model = cnn_attention_network(X_train, y_train, X_valid, y_dev, max_len, max_features, embed_size, embedding_matrix,
-                      lr=1e-3, lr_d=0, spatial_dr=0.1, dense_units=128, conv_size=128, dr=0.1, patience=4)
-
+    model = bilstm_attention_network(X_train, y_train, X_valid, y_dev, max_len, max_features, embed_size, embedding_matrix, lr=1e-3, lr_d=0, spatial_dr=0.1, dense_units=128, conv_size=128, dr=0.1, patience=4)
     fit_time = time.time() - a
     logging.info("=================================START====================================\n")
     logging.info("==============================TRAINING====================================")
-    logging.info("cnn_attention_network")
-    logging.info("dataset name: %s", args.train_data)
-    logging.info("fit_time: %s", fit_time)
-    logging.info("\n")
-
-    logging.info("==========================TESTING==========================================")
-    test_files(model, tk, 'cnn_attention_network')
-
-
-    # CNN LSTM NETWORK
-
-    a = time.time()
-    model = cnn_lstm_network(X_train, y_train, X_valid, y_dev, max_len, max_features, embed_size, embedding_matrix,
-                      lr=1e-3, lr_d=0, spatial_dr=0.1, dense_units=128, conv_size=128, dr=0.1, patience=4)
-
-    fit_time = time.time() - a
-    logging.info("=================================START====================================\n")
-    logging.info("==============================TRAINING====================================")
-    logging.info("cnn_lstm_network")
-    logging.info("dataset name: %s", args.train_data)
-    logging.info("fit_time: %s", fit_time)
-    logging.info("\n")
-
-
-    logging.info("==========================TESTING==========================================")
-    test_files(model, tk, 'cnn_lstm_network')
-
-
-    # LSTM NETWORK
-
-    a = time.time()
-    model = lstm_network(X_train, y_train, X_valid, y_dev, max_len, max_features, embed_size, embedding_matrix,
-                      lr=1e-3, lr_d=0, spatial_dr=0.1, dense_units=128, conv_size=128, dr=0.1, patience=4)
-
-    fit_time = time.time() - a
-    logging.info("=================================START====================================\n")
-    logging.info("==============================TRAINING====================================")
-    logging.info("lstm_network")
+    logging.info("bilstm_attention_network")
     logging.info("dataset name: %s", args.train_data)
     logging.info("fit_time: %s", fit_time)
     logging.info("\n")
     logging.info("==========================TESTING==========================================")
-    test_files(model, tk, 'lstm_network')
-
-
-    # CNN DEEP LSTM
-    a = time.time()
-    model = cnn_deep_lstm(X_train, y_train, X_valid, y_dev, max_len, max_features, embed_size, embedding_matrix,
-                      lr=1e-3, lr_d=0, spatial_dr=0.1, dense_units=128, conv_size=128, dr=0.1, patience=4)
-
-    fit_time = time.time() - a
-    logging.info("=================================START====================================\n")
-    logging.info("==============================TRAINING====================================")
-    logging.info("cnn_deep_lstm_network")
-    logging.info("dataset name: %s", args.train_data)
-    logging.info("fit_time: %s", fit_time)
-    logging.info("\n")
-    logging.info("==========================TESTING==========================================")
-    test_files(model, tk, 'cnn_deep_lstm_network')
-
-
-    # BILSTM NETWORK
-
-    a = time.time()
-    model = bilstm_network(X_train, y_train, X_valid, y_dev, max_len, max_features, embed_size, embedding_matrix,
-                      lr=1e-3, lr_d=0, spatial_dr=0.1, dense_units=128, conv_size=128, dr=0.1, patience=4)
-    fit_time = time.time() - a
-    logging.info("=================================START====================================\n")
-    logging.info("==============================TRAINING====================================")
-    logging.info("bilstm_network")
-    logging.info("dataset name: %s", args.train_data)
-    logging.info("fit_time: %s", fit_time)
-    logging.info("\n")
-    logging.info("==========================TESTING==========================================")
-    test_files(model, tk, 'bilstm_network')
-
-
+    test_files(model, tk, 'bilstm_attention_network')
 
 
 

@@ -198,7 +198,7 @@ def bert_network(X_train, y_train, X_dev, y_dev, epochs=10):
 
     # define the optimizer
     optimizer = AdamW(model.parameters(),
-                      lr=1e-5)
+                      lr=1e-4)
 
 
     best_valid_loss = float('inf')
@@ -354,7 +354,7 @@ def bert_network(X_train, y_train, X_dev, y_dev, epochs=10):
 def main():
     X_train_o, y_train = load_tab_data(filename=args.train_data, preprocessed=True)
     X_dev_o, y_dev = load_tab_data(filename=args.dev_data, preprocessed=True)
-    bert_network(X_train_o, y_train, X_dev_o, y_dev, epochs=10)
+    bert_network(X_train_o, y_train, X_dev_o, y_dev, epochs=30)
 
 
 
