@@ -21,7 +21,7 @@ python network_models.py --train_data '../processed_data/en/davidson/train.txt' 
 
 # fine-tune bert model and evaluate
 
-python bert_network.py --train_data '../processed_data/en/davidson/train.txt' --dev_data '../processed_data/en/davidson/dev.txt' --test_path '../processed_data/en/davidson'
+python bert_model.py --train_data '../processed_data/en/davidson/train.txt' --dev_data '../processed_data/en/davidson/dev.txt' --test_path '../processed_data/en/davidson'
 
 
 
