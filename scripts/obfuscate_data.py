@@ -4,12 +4,15 @@
 from get_obfuscated_text import Select_span, Obfuscation_strategies
 import codecs
 import pandas as pd
-import argparse
 from args import get_args
 import os
 from nltk.tokenize import TweetTokenizer
+from somajo import SoMaJo
+
 
 args = get_args()
+
+de_tokenizer = SoMaJo("de_CMC")
 
 
 def get_dataset(data_file):
@@ -58,8 +61,14 @@ def main():
                     for i, entity in enumerate(span):
                         #print(entity)
                         #print(obs.function_mapping[each_strategy](obs)[i])
-                        if entity in TweetTokenizer().tokenize(obfuscated_statement):
-                            obfuscated_statement = obfuscated_statement.replace(entity, obs.function_mapping[each_strategy](obs)[i])
+                        if args.use_de_tokenizer:
+                            if entity in [t.text for t in de_tokenizer.tokenize_text([obfuscated_statement])[0]]:
+                                obfuscated_statement = obfuscated_statement.replace(entity,
+                                                                                    obs.function_mapping[each_strategy](
+                                                                                        obs)[i])
+                        else:
+                            if entity in TweetTokenizer().tokenize(obfuscated_statement):
+                                obfuscated_statement = obfuscated_statement.replace(entity, obs.function_mapping[each_strategy](obs)[i])
                     obfuscated_dataset.append(obfuscated_statement + "\t" + str(rows['label']))
                 except (IndexError):
                     obfuscated_dataset.append(rows['tweet']+ "\t" + str(rows['label']))

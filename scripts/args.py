@@ -45,6 +45,7 @@ def get_args():
     parser.add_argument('--evaluate_label_path', type=str, default='../results')
     parser.add_argument('--original_data', type=str, default='../processed_data/en/davidson/test.txt')
     parser.add_argument('--only_test', type=bool, default=False)
+    parser.add_argument('--use_de_tokenizer', type=bool, default=False)
 
 
 

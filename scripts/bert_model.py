@@ -54,7 +54,10 @@ text_lengths1 = [len(texts1[i].split()) for i in range(len(texts1))]
 
 from transformers import DistilBertTokenizer
 
-tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased', do_lower_case=True)
+if args.use_de_tokenizer:
+    tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-german-cased', do_lower_case=True)
+else:
+    tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased', do_lower_case=True)
 
 
 
@@ -146,7 +149,12 @@ from transformers import DistilBertForSequenceClassification, AdamW, DistilBertC
 
 num_labels = len(set(labels))
 
-model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=num_labels,
+if args.use_de_tokenizer:
+    model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-german-cased', num_labels=num_labels,
+                                                            output_attentions=False, output_hidden_states=False)
+
+else:
+    model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=num_labels,
                                                             output_attentions=False, output_hidden_states=False)
 
 

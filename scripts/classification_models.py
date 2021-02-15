@@ -47,7 +47,10 @@ Load Fasttext Embeddings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 
-EMBEDDING_PATH = "../embeddings/twitter_fasttext.vec" #FastText
+if args.use_de_tokenizer:
+    EMBEDDING_PATH = "../embeddings/fasttext_german_twitter_100d.vec"  # FastText embeddings for German
+else:
+    EMBEDDING_PATH = "../embeddings/twitter_fasttext.vec" #FastText embeddings for english
 if not os.path.exists(EMBEDDING_PATH +'.tmp'):
     logging.info('Embedding file pruning')
     MeanEmbeddingTransformer(EMBEDDING_PATH).generate_temp_embfile(X_train)

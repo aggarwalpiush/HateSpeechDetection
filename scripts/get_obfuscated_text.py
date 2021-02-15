@@ -8,7 +8,10 @@ import nltk
 from get_hatebase_terms import extract_terms_from_json, get_lexicons
 from get_interpretable_spans import get_span
 from args import get_args
+from somajo import SoMaJo
 import os
+
+de_tokenizer = SoMaJo("de_CMC")
 
 args = get_args()
 
@@ -191,7 +194,10 @@ class Select_span(object):
         self.hier_soc_file = hier_soc_file
         self.hier_soc_ngram = hier_soc_ngram
         self.hier_soc_thld = hier_soc_thld
-        self.tokenized_input = TweetTokenizer().tokenize(inputtext)
+        if args.use_de_tokenizer:
+            self.tokenized_input = [t.text for t in de_tokenizer.tokenize_text([inputtext])[0]]
+        else:
+            self.tokenized_input = TweetTokenizer().tokenize(inputtext)
         self.input_length = len(self.tokenized_input)
 
     def apply_random(self):
