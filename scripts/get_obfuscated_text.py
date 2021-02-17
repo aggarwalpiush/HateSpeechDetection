@@ -195,7 +195,7 @@ class Select_span(object):
         self.hier_soc_ngram = hier_soc_ngram
         self.hier_soc_thld = hier_soc_thld
         if args.use_de_tokenizer:
-            self.tokenized_input = [t.text for t in de_tokenizer.tokenize_text([inputtext])[0]]
+            self.tokenized_input = [t.text for t in [sent for sent in de_tokenizer.tokenize_text([inputtext])][0]]
         else:
             self.tokenized_input = TweetTokenizer().tokenize(inputtext)
         self.input_length = len(self.tokenized_input)

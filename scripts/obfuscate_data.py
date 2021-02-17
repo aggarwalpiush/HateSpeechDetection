@@ -62,7 +62,7 @@ def main():
                         #print(entity)
                         #print(obs.function_mapping[each_strategy](obs)[i])
                         if args.use_de_tokenizer:
-                            if entity in [t.text for t in de_tokenizer.tokenize_text([obfuscated_statement])[0]]:
+                            if entity in [t.text for t in [sent for sent in de_tokenizer.tokenize_text([obfuscated_statement])][0]]:
                                 obfuscated_statement = obfuscated_statement.replace(entity,
                                                                                     obs.function_mapping[each_strategy](
                                                                                         obs)[i])
