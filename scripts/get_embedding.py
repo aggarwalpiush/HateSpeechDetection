@@ -24,7 +24,7 @@ class MeanEmbeddingTransformer(CountVectorizer):
             for i, line in tqdm(enumerate(file)):
                 if i == 0:
                     continue
-                l = line.split(' ')
+                l = line.replace('\n','').strip().split(' ')
                 if l[0].isalpha():
                     v = [float(i) for i in l[1:]]
                     E[l[0]] = np.array(v)

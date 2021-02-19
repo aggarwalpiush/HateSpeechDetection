@@ -23,12 +23,12 @@ def get_args():
     # model parameters
     parser.add_argument('--train_data', type=str, default='../processed_data/de/germeval/train.txt')
     parser.add_argument('--obfuscated_data_prefix', type=str, default='../processed_data/de/germeval/obfuscated_')
-    parser.add_argument('--random_ngram', type=int, default=1)
+    parser.add_argument('--random_ngram', type=int, default=2)
     parser.add_argument('--dict_file', type=str, default='../dictionaries/hurtlex_DE_lex.txt')
     parser.add_argument('--is_hatebase', type=bool, default=False)
     parser.add_argument('--hier_soc_file', type=str, default='../hierarchical_dict/soc.germeval_demo.txt')
     parser.add_argument('--hier_soc_ngram', type=int, default=2)
-    parser.add_argument('--hier_soc_thld', type=int, default=-1.5)
+    parser.add_argument('--hier_soc_thld', type=int, default=-0.7)
     parser.add_argument('--span', type=str, default='random', choices=['original', 'random', 'random_POS', 'all',
                                                                     'dictionary', 'hierarchical'])
     parser.add_argument('--obfuscation_strategy', type=str, default='camelcasing', choices=['original', 'camelcasing',

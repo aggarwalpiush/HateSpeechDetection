@@ -2,9 +2,17 @@
 # -*- coding : utf-8 -*-
 
 import codecs
-from nltk.corpus import stopwords 
+from nltk.corpus import stopwords
+from args import get_args
 
-STOP_WORDS = set(stopwords.words('english'))
+
+args = get_args()
+
+
+if args.use_de_tokenizer:
+    STOP_WORDS = set(stopwords.words('german'))
+else:
+    STOP_WORDS = set(stopwords.words('english'))
 
 
 def get_span(filename, ngram = 2, threshold = -0.5):
@@ -23,7 +31,7 @@ def get_span(filename, ngram = 2, threshold = -0.5):
                 if len(filter_gram) <= ngram and len(filter_gram) > 0:
                     score = float(each_gspair[-1])
                     if score <= threshold:
-                        selected_terms.append(" ".join(filter_gram))
+                        selected_terms.append(" ".join(filter_gram).lower())
     return set(selected_terms)
 
 

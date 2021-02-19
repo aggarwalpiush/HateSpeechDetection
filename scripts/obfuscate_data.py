@@ -25,9 +25,9 @@ def put_dataset(obfuscated_path, data):
         for line in data:
             ob_obj.write(line+"\n")
 
-OBFUSCATED_SPAN = [ 'random', 'random_POS', 'all', 'dictionary', 'hierarchical']
+#OBFUSCATED_SPAN = [ 'random', 'random_POS', 'all', 'dictionary', 'hierarchical']
 
-#OBFUSCATED_SPAN = ['hierarchical']
+OBFUSCATED_SPAN = ['hierarchical']
 
 OBFUSCATED_STRATEGY = [ 'camelcasing',
                         'snakecasing', 'spacing', 'voweldrop', 'random_masking', 'spelling', 'leetspeak', 'mathspeak',
@@ -62,10 +62,13 @@ def main():
                         #print(entity)
                         #print(obs.function_mapping[each_strategy](obs)[i])
                         if args.use_de_tokenizer:
-                            if entity in [t.text for t in [sent for sent in de_tokenizer.tokenize_text([obfuscated_statement])][0]]:
-                                obfuscated_statement = obfuscated_statement.replace(entity,
-                                                                                    obs.function_mapping[each_strategy](
-                                                                                        obs)[i])
+                            all_entities = []
+                            sentences = de_tokenizer.tokenize_text([obfuscated_statement])
+                            for sentence in sentences:
+                                for token in sentence:
+                                    all_entities.append(token.text)
+                            if entity in all_entities:
+                                obfuscated_statement = obfuscated_statement.replace(entity,  obs.function_mapping[each_strategy](obs)[i])
                         else:
                             if entity in TweetTokenizer().tokenize(obfuscated_statement):
                                 obfuscated_statement = obfuscated_statement.replace(entity, obs.function_mapping[each_strategy](obs)[i])

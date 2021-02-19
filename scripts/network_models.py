@@ -329,7 +329,10 @@ def build_matrix(embedding_path, tk, max_features):
 
     word_index = tk.word_index
     nb_words = max_features
-    embedding_matrix = np.zeros((nb_words + 1, 300))
+    if args.use_de_tokenizer:
+        embedding_matrix = np.zeros((nb_words + 1, 100))
+    else:
+        embedding_matrix = np.zeros((nb_words + 1, 300))
     for word, i in word_index.items():
         if i >= max_features:
             continue
@@ -341,11 +344,13 @@ def build_matrix(embedding_path, tk, max_features):
 
 def create_embedding_matrix(embed, tk, max_features):
     if embed == 'fasttext':
-        if not os.path.exists('../embeddings/crawl-300d-2M.vec'):
+        if args.use_de_tokenizer:
+            return build_matrix('../embeddings/fasttext_german_twitter_100d.vec', tk, max_features)
+        elif not os.path.exists('../embeddings/crawl-300d-2M.vec'):
             wget.download('https://dl.fbaipublicfiles.com/fasttext/vectors-english/crawl-300d-2M.vec.zip', '../embeddings')
             with zipfile.ZipFile('../embeddings/crawl-300d-2M.vec.zip', "r") as zip_ref:
                 zip_ref.extractall()
-        return build_matrix('../embeddings/crawl-300d-2M.vec', tk, max_features)
+            return build_matrix('../embeddings/crawl-300d-2M.vec', tk, max_features)
     elif embed == 'glove':
         if not os.path.exists('../embeddings/glove.42B.300d.txt'):
             wget.download('http://nlp.stanford.edu/data/glove.42B.300d.zip',

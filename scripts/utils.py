@@ -36,7 +36,12 @@ def load_tab_data(filename = "../processed_data/en/davidson/train.txt", preproce
     for x in XT:
         if preprocessed:
             if args.use_de_tokenizer:
-                X.append(' '.join([t.text for t in de_tokenizer.tokenize_text([str(x)])[0]]))
+                tweet_tokens = []
+                sentences = de_tokenizer.tokenize_text([str(x)])
+                for sentence in sentences:
+                    for token in sentence:
+                        tweet_tokens.append(token.text)
+                X.append(' '.join(tweet_tokens))
             else:
                 X.append(' '.join(arc_obj.tokenizeRawTweetText(str(x))))
         else:

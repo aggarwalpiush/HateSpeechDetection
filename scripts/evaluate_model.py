@@ -29,7 +29,7 @@ def main():
             y_preds = loaded_model.predict(X_test)
             score_time = time.time() - a
             result_file = os.path.join(args.evaluate_label_path, os.path.basename(test_file).replace('.txt', '') + '_' +
-                    os.path.basename(args.model_path).replace('.pkl', '')+'_predictions.txt')
+                    os.path.basename(model).replace('.pkl', '')+'_predictions.txt')
 
             with codecs.open(result_file, 'w', 'utf-8') as result_obj:
                 for i, val in enumerate(X_test):
