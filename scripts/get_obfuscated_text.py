@@ -17,10 +17,12 @@ args = get_args()
 
 
 
-AVAILABLE_OBFUSCATION = ['camelcasing', 'snakecasing', 'spacing', 'voweldrop', 'masking', 'spelling', 'leetspeak',
+AVAILABLE_OBFUSCATION = ['camelcasing', 'snakecasing', 'spacing', 'voweldrop', 'masking', 'spelling', 'leetspeak', 'dicritics',
                          'mathspeak', 'reversal', 'firstcharacter']
 
 LEXICON_LIST = get_span(args.hier_soc_file, args.hier_soc_ngram, args.hier_soc_thld)
+ 
+
 
 class Obfuscation_strategies(object):
     def __init__(self, inputspan):
@@ -40,6 +42,10 @@ class Obfuscation_strategies(object):
                     outspan.append(each_span[i])
             outputspan.append(''.join(outspan))
         return outputspan
+
+    def apply_dicritics(self):
+        outputspan = []
+        diacritic_char = {"a":["ā", "ą"], "e":"ē", "i":"ī", "u": "ū", "c":"č", "g":"ģ", "k":"ķ", "l":"ļ", "n": "ņ", "s": "š", "z": "ž", ę, į and ų}
 
     def apply_snakecasing(self):
         outputspan = []
