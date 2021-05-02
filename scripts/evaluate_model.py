@@ -20,9 +20,10 @@ args = get_args()
 
 def main():
     for model in glob(os.path.join(args.model_path, '*.pkl')):
-        for test_file in glob(os.path.join(args.test_path, '*test_data*obfuscated.txt')):
+        for test_file in glob(os.path.join(args.test_path, '*test_dataoriginal*obfuscated.txt')):
             print(test_file)
             X_test, y_test = load_tab_data(filename=test_file, preprocessed=True, test_file=True)
+            print(len(X_test))
 
             loaded_model = pickle.load(open(model, 'rb'))
             a = time.time()

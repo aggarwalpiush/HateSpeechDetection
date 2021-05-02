@@ -53,9 +53,12 @@ text_lengths1 = [len(texts1[i].split()) for i in range(len(texts1))]
 
 
 from transformers import DistilBertTokenizer
+from transformers import AutoModel, AutoTokenizer
 
 if args.use_de_tokenizer:
-    tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-german-cased', do_lower_case=True)
+    tokenizer = AutoTokenizer.from_pretrained("bert-base-german-dbmdz-uncased")
+    #model = AutoModel.from_pretrained("dbmdz/bert-base-german-cased")
+    #tokenizer = DistilBertTokenizer.from_pretrained('bert-base-german-cased', do_lower_case=True)
 else:
     tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased', do_lower_case=True)
 
@@ -146,13 +149,13 @@ val_dataloader = DataLoader(val_data, sampler=val_sampler, batch_size=batch_size
 
 
 from transformers import DistilBertForSequenceClassification, AdamW, DistilBertConfig
-
+from transformers import AutoTokenizer, AutoModelForMaskedLM
 num_labels = len(set(labels))
 
 if args.use_de_tokenizer:
-    model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-german-cased', num_labels=num_labels,
-                                                            output_attentions=False, output_hidden_states=False)
-
+    #model = DistilBertForSequenceClassification.from_pretrained('bert-base-german-cased', num_labels=num_labels,
+    #                                                        output_attentions=False, output_hidden_states=False)
+    model = AutoModelForMaskedLM.from_pretrained("bert-base-german-dbmdz-uncased")
 else:
     model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=num_labels,
                                                             output_attentions=False, output_hidden_states=False)
