@@ -7,9 +7,11 @@ from nltk.tokenize import TweetTokenizer
 import nltk
 from get_hatebase_terms import extract_terms_from_json, get_lexicons
 from get_interpretable_spans import get_span
+from get_diacritics import get_diacritics_dict
 from args import get_args
 from somajo import SoMaJo
 import os
+import eng_to_ipa as ipa
 
 de_tokenizer = SoMaJo("de_CMC")
 
@@ -21,6 +23,7 @@ AVAILABLE_OBFUSCATION = ['camelcasing', 'snakecasing', 'spacing', 'voweldrop', '
                          'mathspeak', 'reversal', 'firstcharacter']
 
 LEXICON_LIST = get_span(args.hier_soc_file, args.hier_soc_ngram, args.hier_soc_thld)
+SMALL_DIACRITIC_DICT, CAPS_DIACRITIC_DICT = get_diacritics_dict("../dictionaries/diacritics.txt")
  
 
 
@@ -43,9 +46,44 @@ class Obfuscation_strategies(object):
             outputspan.append(''.join(outspan))
         return outputspan
 
-    def apply_dicritics(self):
+    def apply_phonetic(self):
         outputspan = []
-        diacritic_char = {"a":["ā", "ą"], "e":"ē", "i":"ī", "u": "ū", "c":"č", "g":"ģ", "k":"ķ", "l":"ļ", "n": "ņ", "s": "š", "z": "ž", ę, į and ų}
+        for each_span in self.inputspan:
+            phonetics = ipa.ipa_list(each_span)
+            outspan = []
+            for tok in phonetics:
+                outspan.append(random.choice(set(tok)))
+            outputspan.append(' '.join(outspan))
+        return outputspan
+
+    def apply_kebabcasing(self):
+        outputspan = []
+        for each_span in self.inputspan:
+            outspan = []
+            for i in range(len(each_span)):
+                if not i == 0:
+                    outspan.append('-'+ str(each_span[i]))
+                else:
+                    outspan.append(each_span[i])
+            outputspan.append(''.join(outspan))
+        return outputspan
+
+    def apply_diacritics(self):
+        outputspan = []
+        for each_span in self.inputspan:
+            len_span = len(each_span)
+            outspan = each_span
+            getchar = lambda c: random.choice(SMALL_DIACRITIC_DICT[c]) if c in SMALL_DIACRITIC_DICT \
+                else (random.choice(CAPS_DIACRITIC_DICT[c]) if c in CAPS_DIACRITIC_DICT else c)
+            if len_span > 2:
+                rep = random.choice(range(len_span))
+                try:
+                    outspan = outspan.replace(outspan[rep], getchar(outspan[rep]))
+                except AttributeError:
+                    outspan = outspan
+            outputspan.append(outspan)
+        return outputspan
+
 
     def apply_snakecasing(self):
         outputspan = []
@@ -72,6 +110,19 @@ class Obfuscation_strategies(object):
             outputspan.append(''.join(outspan))
         return outputspan
 
+    def apply_characterdrop(self):
+        outputspan = []
+        for each_span in self.inputspan:
+            outspan = each_span
+            len_span = len(outspan)
+            if len_span > 2:
+                rep = random.choice(range(1, len_span-1))
+                try:
+                    outspan = outspan.replace(outspan[rep], '')
+                except AttributeError:
+                    outspan = outspan
+            outputspan.append(outspan)
+        return outputspan
 
     def apply_voweldrop(self):
         vowels = ('a', 'e', 'i', 'o', 'u')
@@ -146,7 +197,8 @@ class Obfuscation_strategies(object):
         outputspan = []
         for each_span in self.inputspan:
             getchar = lambda c: chars[c] if c in chars else c
-            chars = {"C":"ℂ","N":"ℕ","Q":"ℚ","R":"ℝ","Z":"ℤ","M":"ℳ","L":"ℒ","l":"ℓ","E":"ℰ","a":"α","B":"β","y":"γ","p":"ρ"}
+            chars = {"C":"ℂ","N":"ℕ","Q":"ℚ","R":"ℝ","Z":"ℤ","M":"ℳ","L":"ℒ","l":"ℓ","E":"ℰ","a":"α",
+                     "B":"β","y":"γ","p":"ρ"}
             outputspan.append(''.join(getchar(c) for c in each_span))
         return outputspan
 
@@ -176,7 +228,11 @@ class Obfuscation_strategies(object):
         return self.inputspan
 
     function_mapping = {
+        'phonetic' : apply_phonetic,
+        'charcaterdrop' : apply_characterdrop,
+        'kebabcasing' : apply_kebabcasing,
         'camelcasing': apply_camelcasing,
+        'diacritics' : apply_diacritics,
         'snakecasing' : apply_snakecasing,
         'spacing': apply_spacing,
         'voweldrop': apply_voweldrop,
@@ -244,7 +300,7 @@ class Select_span(object):
                     if len(i) > 3:
                         eligible_pos.append(i)
             count += 1
-        return random.choice(eligible_pos)
+        return [random.choice(eligible_pos)]
 
     def apply_all(self):
         '''
@@ -269,7 +325,7 @@ class Select_span(object):
         for lex in lexicon_list:
             if lex in self.inputtext.lower():
                 dictionary_obfuscated_text.append(lex)
-        return dictionary_obfuscated_text
+        return [random.choice(dictionary_obfuscated_text)]
 
     def apply_hierarchical(self):
         '''
@@ -281,7 +337,7 @@ class Select_span(object):
         for lex in LEXICON_LIST:
             if lex in self.inputtext.lower():
                 hierarchical_obfuscated_text.append(lex)
-        return hierarchical_obfuscated_text
+        return [random.choice(hierarchical_obfuscated_text)]
 
     def apply_original(self):
         '''
