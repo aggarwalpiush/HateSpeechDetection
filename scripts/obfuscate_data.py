@@ -25,15 +25,15 @@ def put_dataset(obfuscated_path, data):
         for line in data:
             ob_obj.write(line+"\n")
 
-#OBFUSCATED_SPAN = [ 'random', 'random_POS', 'all', 'dictionary', 'hierarchical']
+OBFUSCATED_SPAN = [ 'random', 'random_POS', 'all', 'dictionary', 'hierarchical', '']
 
-OBFUSCATED_SPAN = ['hierarchical', 'dictionary']
+#OBFUSCATED_SPAN = ['hierarchical', 'dictionary']
 
-#OBFUSCATED_STRATEGY = [ 'camelcasing',
- #                       'snakecasing', 'spacing', 'voweldrop', 'random_masking', 'spelling', 'leetspeak', 'mathspeak',
-  #                      'reversal', 'firstCharacter']
+OBFUSCATED_STRATEGY = [ 'camelcasing',
+                        'snakecasing', 'spacing', 'voweldrop', 'random_masking', 'spelling', 'leetspeak', 'mathspeak',
+                        'reversal', 'firstCharacter', 'phonetic', 'charcaterdrop', 'kebabcasing', 'diacritics']
 
-OBFUSCATED_STRATEGY = ['spacing', 'random_masking', 'leetspeak', 'mathspeak', 'dicritics']
+#OBFUSCATED_STRATEGY = ['spacing', 'random_masking', 'leetspeak', 'mathspeak', 'dicritics']
 
 from shutil import copyfile
 def main():
