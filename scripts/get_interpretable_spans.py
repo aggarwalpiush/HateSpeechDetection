@@ -16,7 +16,7 @@ else:
 
 
 def get_span(filename, ngram = 2, threshold = -0.5):
-    selected_terms = []
+    selected_terms = {}
     with codecs.open(filename, 'r', 'utf-8') as f:
         for line in f:
             #print("\nline: %s\n".format(line))
@@ -26,17 +26,22 @@ def get_span(filename, ngram = 2, threshold = -0.5):
                 gram = each_gspair[:-1]
                 filter_gram = []
                 for gr in gram:
-                    if not gr == '<unk>' and not gr in STOP_WORDS:
+                    if not gr == '<unk>' and not gr in STOP_WORDS and len(gr) > 2:
                         filter_gram.append(gr)
-                if len(filter_gram) <= ngram and len(filter_gram) > 0:
-                    score = float(each_gspair[-1])
-                    if score <= threshold:
-                        selected_terms.append(" ".join(filter_gram).lower())
-    return set(selected_terms)
+                        if len(filter_gram) <= ngram and len(filter_gram) > 0:
+                            score = float(each_gspair[-1])
+                            if score <= threshold:
+                                if " ".join(filter_gram).lower() in selected_terms.keys():
+                                    selected_terms[" ".join(filter_gram).lower()].append(score)
+                                else:
+                                    selected_terms[(" ".join(filter_gram).lower())] = [score]
+    for k in selected_terms.keys():
+        selected_terms[k] = min(selected_terms[k])
+    return selected_terms
 
 
 if __name__ == "__main__":
-    get_span("../hierarchical_dict/soc.davidson_demo.txt")
+    terms = get_span("../hierarchical_dict/soc.davidson_demo.txt", ngram = 1, threshold = -0.7)
 
-
+    
 

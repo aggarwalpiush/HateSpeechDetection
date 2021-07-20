@@ -10,8 +10,8 @@ args = get_args()
 
 
 def get_diacritics_dict(filename):
-    small_diacritic_dict = []
-    caps_diacritic_dict = []
+    small_diacritic_dict = {}
+    caps_diacritic_dict = {}
     with codecs.open(filename, 'r', 'utf-8') as f:
         for line in f:
             line = line.replace('\r\n', '').strip()

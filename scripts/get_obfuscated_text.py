@@ -4,6 +4,7 @@
 import codecs
 import random
 from nltk.tokenize import TweetTokenizer
+import operator
 import nltk
 from get_hatebase_terms import extract_terms_from_json, get_lexicons
 from get_interpretable_spans import get_span
@@ -22,7 +23,7 @@ args = get_args()
 AVAILABLE_OBFUSCATION = ['camelcasing', 'snakecasing', 'spacing', 'voweldrop', 'masking', 'spelling', 'leetspeak', 'dicritics',
                          'mathspeak', 'reversal', 'firstcharacter']
 
-LEXICON_LIST = get_span(args.hier_soc_file, args.hier_soc_ngram, args.hier_soc_thld)
+LEXICON_DICT = get_span(args.hier_soc_file, args.hier_soc_ngram, args.hier_soc_thld)
 SMALL_DIACRITIC_DICT, CAPS_DIACRITIC_DICT = get_diacritics_dict("../dictionaries/diacritics.txt")
  
 
@@ -52,7 +53,7 @@ class Obfuscation_strategies(object):
             phonetics = ipa.ipa_list(each_span)
             outspan = []
             for tok in phonetics:
-                outspan.append(random.choice(set(tok)))
+                outspan.append(random.choice(tok))
             outputspan.append(' '.join(outspan))
         return outputspan
 
@@ -73,8 +74,8 @@ class Obfuscation_strategies(object):
         for each_span in self.inputspan:
             len_span = len(each_span)
             outspan = each_span
-            getchar = lambda c: random.choice(SMALL_DIACRITIC_DICT[c]) if c in SMALL_DIACRITIC_DICT \
-                else (random.choice(CAPS_DIACRITIC_DICT[c]) if c in CAPS_DIACRITIC_DICT else c)
+            getchar = lambda c: random.choice(list(SMALL_DIACRITIC_DICT[c])) if c in SMALL_DIACRITIC_DICT \
+                else (random.choice(list(CAPS_DIACRITIC_DICT[c])) if c in CAPS_DIACRITIC_DICT else c)
             if len_span > 2:
                 rep = random.choice(range(len_span))
                 try:
@@ -274,7 +275,7 @@ class Select_span(object):
         filter_short_tokens = []
         for i, tok in enumerate(self.tokenized_input):
             if i != 0 and i != (self.input_length -1):
-                if len(tok) > 3:
+                if len(tok) > 3 and 'http' not in tok:
                     filter_short_tokens.append(tok)
         text_range = range(len(filter_short_tokens))
         random_rep_index = random.choice(text_range)
@@ -300,6 +301,7 @@ class Select_span(object):
                     if len(i) > 3:
                         eligible_pos.append(i)
             count += 1
+        #print([random.choice(eligible_pos)])
         return [random.choice(eligible_pos)]
 
     def apply_all(self):
@@ -331,14 +333,18 @@ class Select_span(object):
         '''
         apply hierarchical based explanation strategy to choose terms for obfuscation
         '''
-        hierarchical_obfuscated_text = []
+        hierarchical_obfuscated_text = {}
 
-        #lexicon_list = get_span(self.hier_soc_file, self.hier_soc_ngram, self.hier_soc_thld)
-        for lex in LEXICON_LIST:
-            if lex in self.inputtext.lower():
-                hierarchical_obfuscated_text.append(lex)
-        return [random.choice(hierarchical_obfuscated_text)]
-
+        for lex, val in LEXICON_DICT.items():
+            if lex in self.tokenized_input:
+                hierarchical_obfuscated_text[lex]= val
+        #print(hierarchical_obfuscated_text)
+        if len(hierarchical_obfuscated_text.keys()) >= 1:
+            hier_out = [min(hierarchical_obfuscated_text.items(), key=operator.itemgetter(1))[0]]
+        else:
+            hier_out = []
+        return hier_out
+    
     def apply_original(self):
         '''
         return original input
