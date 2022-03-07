@@ -13,6 +13,10 @@ from args import get_args
 from somajo import SoMaJo
 import os
 import eng_to_ipa as ipa
+from nltk.stem import PorterStemmer
+from nltk.tokenize import word_tokenize
+
+ps = PorterStemmer()
 
 de_tokenizer = SoMaJo("de_CMC")
 
@@ -249,10 +253,13 @@ class Obfuscation_strategies(object):
 
 class Select_span(object):
     def __init__(self, inputtext, random_ngram=1, dict_file='../dictionaries/hurtlex_lex.txt', is_hatebase = False,
-                 hier_soc_file='../hierarchical_dict/soc.davidson_demo.txt', hier_soc_ngram=3, hier_soc_thld=-0.5):
+                 hier_soc_file='../hierarchical_dict/soc.davidson_demo.txt',
+                 manual_gen_lexicon='../manual_profane_ranked_dictionary/manually_selected_lexicons_stem.tsv',
+                 hier_soc_ngram=3, hier_soc_thld=-0.5):
         self.inputtext = inputtext
         self.random_ngram = random_ngram
         self.dict_file = dict_file
+        self.manual_dict = manual_gen_lexicon
         self.is_hatebase = is_hatebase
         self.hier_soc_file = hier_soc_file
         self.hier_soc_ngram = hier_soc_ngram
@@ -344,6 +351,25 @@ class Select_span(object):
         else:
             hier_out = []
         return hier_out
+
+    def apply_manual_dict(self):
+        '''
+        Hate lexicons are manually collected where annotators are asked to choose tokens in the provided
+         hate speech sentences with top three priorities. Based on priority scores has been assigned to
+         each token where priorities got weight of 0.5, 0.33, 0.17 respectively.
+        '''
+        manual_dict_obfuscated_text = []
+
+        lexicon_list_with_score = get_lexicons(self.manual_dict)
+        ranked_lexicon_list = [x.split('\t')[0] for x in lexicon_list_with_score]
+
+        for lex in ranked_lexicon_list:
+            if ps.stem(lex) in self.inputtext.lower():
+                manual_dict_obfuscated_text.append(lex)
+                break
+        return manual_dict_obfuscated_text
+
+
     
     def apply_original(self):
         '''
@@ -357,6 +383,7 @@ class Select_span(object):
         'random_POS': apply_random_POS,
         'all': apply_all,
         'dictionary': apply_dictionary,
-        'hierarchical': apply_hierarchical
+        'hierarchical': apply_hierarchical,
+        'manual_dict': apply_manual_dict
     }
 

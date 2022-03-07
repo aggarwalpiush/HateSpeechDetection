@@ -9,6 +9,8 @@ import os
 from nltk.tokenize import TweetTokenizer
 from somajo import SoMaJo
 from global_variables import OBFUSCATED_SPAN, OBFUSCATED_STRATEGY
+import nltk
+nltk.download('stopwords')
 
 
 args = get_args()
@@ -26,10 +28,11 @@ def put_dataset(obfuscated_path, data):
         for line in data:
             ob_obj.write(line+"\n")
 
-OBFUSCATED_SPAN = [ 'random', 'random_POS', 'all', 'dictionary', 'hierarchical']
+OBFUSCATED_SPAN = [ 'random', 'random_POS', 'all', 'dictionary', 'hierarchical', 'manual_dict']
 
 #OBFUSCATED_SPAN = [ 'random_POS', 'all', 'dictionary', 'hierarchical']
 #OBFUSCATED_SPAN = ['dictionary']
+OBFUSCATED_SPAN = ['manual_dict']
 
 OBFUSCATED_STRATEGY = [ 'camelcasing',
                         'snakecasing', 'spacing', 'voweldrop', 'random_masking', 'spelling', 'leetspeak', 'mathspeak',
@@ -54,6 +57,7 @@ def main():
                 #print(rows['tweet'])
                 ss = Select_span(rows['tweet'], random_ngram=args.random_ngram, dict_file=args.dict_file,
                                  is_hatebase=args.is_hatebase, hier_soc_file=args.hier_soc_file,
+                                 manual_gen_lexicon=args.manual_dict_file,
                                  hier_soc_ngram=args.hier_soc_ngram, hier_soc_thld=args.hier_soc_thld)
                 # select random span
                 try:

@@ -25,6 +25,8 @@ def get_args():
     parser.add_argument('--obfuscated_data_prefix', type=str, default='../processed_data/en/davidson/obfuscated_')
     parser.add_argument('--random_ngram', type=int, default=1)
     parser.add_argument('--dict_file', type=str, default='../dictionaries/hurtlex_lex.txt')
+    parser.add_argument('--manual_dict_file', type=str,
+                        default='../manual_profane_ranked_dictionary/manually_selected_lexicons_stem.tsv')
     parser.add_argument('--is_hatebase', type=bool, default=False)
     parser.add_argument('--hier_soc_file', type=str, default='../hierarchical_dict/soc.davidson_demo.txt')
     parser.add_argument('--hier_soc_ngram', type=int, default=1)
