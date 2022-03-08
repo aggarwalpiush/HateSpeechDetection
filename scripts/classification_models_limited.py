@@ -59,7 +59,7 @@ elif args.vec_scheme == 'fasttext':
     vec = MeanEmbeddingTransformer(EMBEDDING_PATH +'.tmp')
 
 
-
+'''
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Run GradBoost
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -110,7 +110,7 @@ parameters = [{
 #logging.info("LogReg Model")
 #logging.info("dataset name: %s", args.train_data)
 #logging.info("Fit time : %s", fit_time)
-
+'''
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Run SVM
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -130,11 +130,11 @@ parameters = [{
     'svm__C': [ 10]
 }]
 
-#fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "svm")
-#logging.info("SVM Model")
-#logging.info("dataset name: %s", args.train_data)
-#logging.info("Fit time : %s", fit_time)
-
+fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.append(y_train, y_dev), "svm")
+logging.info("SVM Model")
+logging.info("dataset name: %s", args.train_data)
+logging.info("Fit time : %s", fit_time)
+'''
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Run RandomForest
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -280,7 +280,7 @@ fit_time = fit_train_save(pipe, parameters, numpy.append(X_train, X_dev), numpy.
 logging.info("Bagging Model")
 logging.info("dataset name: %s", args.train_data)
 logging.info("Fit time : %s", fit_time)
-
+'''
 
 
 
