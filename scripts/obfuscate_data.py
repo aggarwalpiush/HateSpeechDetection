@@ -9,6 +9,16 @@ import os
 from nltk.tokenize import TweetTokenizer
 from somajo import SoMaJo
 from global_variables import OBFUSCATED_SPAN, OBFUSCATED_STRATEGY
+import nltk
+from nltk.stem import PorterStemmer
+
+import spacy
+nlp_en = spacy.load("en_core_web_sm")
+
+
+
+
+ps = PorterStemmer()
 
 
 args = get_args()
@@ -26,10 +36,11 @@ def put_dataset(obfuscated_path, data):
         for line in data:
             ob_obj.write(line+"\n")
 
-OBFUSCATED_SPAN = [ 'random', 'random_POS', 'all', 'dictionary', 'hierarchical']
+OBFUSCATED_SPAN = [ 'random', 'random_POS', 'all', 'dictionary', 'hierarchical', 'manual_dict']
 
 #OBFUSCATED_SPAN = [ 'random_POS', 'all', 'dictionary', 'hierarchical']
 #OBFUSCATED_SPAN = ['dictionary']
+OBFUSCATED_SPAN = ['manual_dict']
 
 OBFUSCATED_STRATEGY = [ 'camelcasing',
                         'snakecasing', 'spacing', 'voweldrop', 'random_masking', 'spelling', 'leetspeak', 'mathspeak',
@@ -54,6 +65,7 @@ def main():
                 #print(rows['tweet'])
                 ss = Select_span(rows['tweet'], random_ngram=args.random_ngram, dict_file=args.dict_file,
                                  is_hatebase=args.is_hatebase, hier_soc_file=args.hier_soc_file,
+                                 manual_gen_lexicon=args.manual_dict_file,
                                  hier_soc_ngram=args.hier_soc_ngram, hier_soc_thld=args.hier_soc_thld)
                 # select random span
                 try:
@@ -76,12 +88,23 @@ def main():
                             if entity in all_entities:
                                 obfuscated_statement = obfuscated_statement.replace(entity,  obs.function_mapping[each_strategy](obs)[i])
                         else:
-                            if entity in TweetTokenizer().tokenize(obfuscated_statement.lower()):
-                                #print(TweetTokenizer().tokenize(obfuscated_statement))
-                                obfuscated_statement = obfuscated_statement.replace(TweetTokenizer().tokenize(obfuscated_statement)[TweetTokenizer().tokenize(obfuscated_statement.lower()).index(entity)], obs.function_mapping[each_strategy](obs)[i])
+                            tokenized_statement = nlp_en(obfuscated_statement)
+                            stemmed_statement = [ps.stem(x.text.lower()) for x in tokenized_statement]
+                            if entity in stemmed_statement:
+                                #print("entity %s found in obfuscatedd_statement: %s" % (entity, obfuscated_statement))
+                                #print(stemmed_statement)
+                                #print(tokenized_statement[stemmed_statement.index(entity)])
+                                #print(obs.function_mapping[each_strategy](obs)[i])
+                                obfuscated_statement = obfuscated_statement.replace(tokenized_statement[stemmed_statement.index(entity)].text, obs.function_mapping[each_strategy](obs)[i])
                                 #print(obfuscated_statement)
+                                #print('====================')
+                            else:
+                                print("entity %s not found in obfuscatedd_statement: %s" %(entity, obfuscated_statement))
+
                     obfuscated_dataset.append(obfuscated_statement + "\t" + str(rows['label']))
                 except (IndexError):
+                    #print('got exception')
+                    #print(rows['tweet'])
                     obfuscated_dataset.append(rows['tweet']+ "\t" + str(rows['label']))
             put_dataset(os.path.join(os.path.dirname(args.original_data),
                                      os.path.basename(os.path.dirname(args.original_data)) +

@@ -6,17 +6,26 @@ import random
 from nltk.tokenize import TweetTokenizer
 import operator
 import nltk
-from get_hatebase_terms import extract_terms_from_json, get_lexicons
+from get_hatebase_terms import extract_terms_from_json, get_lexicons, get_ranked_lexicons
 from get_interpretable_spans import get_span
 from get_diacritics import get_diacritics_dict
 from args import get_args
 from somajo import SoMaJo
 import os
 import eng_to_ipa as ipa
+from nltk.stem import PorterStemmer
+from nltk.tokenize import word_tokenize
+
+ps = PorterStemmer()
 
 de_tokenizer = SoMaJo("de_CMC")
 
 args = get_args()
+
+import spacy
+nlp_en = spacy.load("en_core_web_sm")
+
+
 
 
 
@@ -249,10 +258,13 @@ class Obfuscation_strategies(object):
 
 class Select_span(object):
     def __init__(self, inputtext, random_ngram=1, dict_file='../dictionaries/hurtlex_lex.txt', is_hatebase = False,
-                 hier_soc_file='../hierarchical_dict/soc.davidson_demo.txt', hier_soc_ngram=3, hier_soc_thld=-0.5):
+                 hier_soc_file='../hierarchical_dict/soc.davidson_demo.txt',
+                 manual_gen_lexicon='../manual_profane_ranked_dictionary/manually_selected_lexicons_stem.tsv',
+                 hier_soc_ngram=3, hier_soc_thld=-0.5):
         self.inputtext = inputtext
         self.random_ngram = random_ngram
         self.dict_file = dict_file
+        self.manual_dict = manual_gen_lexicon
         self.is_hatebase = is_hatebase
         self.hier_soc_file = hier_soc_file
         self.hier_soc_ngram = hier_soc_ngram
@@ -263,7 +275,8 @@ class Select_span(object):
                 for token in sent:
                     self.tokenized_input.append(token.text)
         else:
-            self.tokenized_input = TweetTokenizer().tokenize(inputtext)
+            tokenized_statement = [x.text for x in nlp_en(inputtext)]
+            self.tokenized_input = tokenized_statement
         self.input_length = len(self.tokenized_input)
 
     def apply_random(self):
@@ -344,6 +357,23 @@ class Select_span(object):
         else:
             hier_out = []
         return hier_out
+
+    def apply_manual_dict(self):
+        '''
+        Hate lexicons are manually collected where annotators are asked to choose tokens in the provided
+         hate speech sentences with top three priorities. Based on priority scores has been assigned to
+         each token where priorities got weight of 0.5, 0.33, 0.17 respectively.
+        '''
+        manual_lexicons = []
+        ranked_lexicon_list = get_ranked_lexicons(self.manual_dict)
+        for lex in ranked_lexicon_list:
+            if lex in [ps.stem(x.lower()) for x in self.tokenized_input]:
+                manual_lexicons.append(lex)
+                break
+        return manual_lexicons
+
+
+
     
     def apply_original(self):
         '''
@@ -357,6 +387,7 @@ class Select_span(object):
         'random_POS': apply_random_POS,
         'all': apply_all,
         'dictionary': apply_dictionary,
-        'hierarchical': apply_hierarchical
+        'hierarchical': apply_hierarchical,
+        'manual_dict': apply_manual_dict
     }
 
