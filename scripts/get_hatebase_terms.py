@@ -22,6 +22,13 @@ def get_lexicons(inputfile="../dictionaries/hurtlex_lex.txt"):
             hate_lexicons.append(lexicon)
     return set(hate_lexicons)
 
+def get_ranked_lexicons(inputfile="../manual_profane_ranked_dictionary/manually_selected_lexicons_stem.tsv"):
+    hate_lexicons = []
+    with codecs.open(inputfile, 'r', 'utf-8') as dict_in:
+        for line in dict_in:
+            hate_lexicons.append(line.strip().lower().replace('\r\n', '').split('\t')[0])
+    return hate_lexicons
+
 
 if __name__ == "__main__":
     extract_terms_from_json("../dictionaries/hatebase_lex.json")

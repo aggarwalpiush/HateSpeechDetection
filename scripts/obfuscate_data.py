@@ -10,7 +10,15 @@ from nltk.tokenize import TweetTokenizer
 from somajo import SoMaJo
 from global_variables import OBFUSCATED_SPAN, OBFUSCATED_STRATEGY
 import nltk
-nltk.download('stopwords')
+from nltk.stem import PorterStemmer
+
+import spacy
+nlp_en = spacy.load("en_core_web_sm")
+
+
+
+
+ps = PorterStemmer()
 
 
 args = get_args()
@@ -80,12 +88,23 @@ def main():
                             if entity in all_entities:
                                 obfuscated_statement = obfuscated_statement.replace(entity,  obs.function_mapping[each_strategy](obs)[i])
                         else:
-                            if entity in TweetTokenizer().tokenize(obfuscated_statement.lower()):
-                                #print(TweetTokenizer().tokenize(obfuscated_statement))
-                                obfuscated_statement = obfuscated_statement.replace(TweetTokenizer().tokenize(obfuscated_statement)[TweetTokenizer().tokenize(obfuscated_statement.lower()).index(entity)], obs.function_mapping[each_strategy](obs)[i])
+                            tokenized_statement = nlp_en(obfuscated_statement)
+                            stemmed_statement = [ps.stem(x.text.lower()) for x in tokenized_statement]
+                            if entity in stemmed_statement:
+                                #print("entity %s found in obfuscatedd_statement: %s" % (entity, obfuscated_statement))
+                                #print(stemmed_statement)
+                                #print(tokenized_statement[stemmed_statement.index(entity)])
+                                #print(obs.function_mapping[each_strategy](obs)[i])
+                                obfuscated_statement = obfuscated_statement.replace(tokenized_statement[stemmed_statement.index(entity)].text, obs.function_mapping[each_strategy](obs)[i])
                                 #print(obfuscated_statement)
+                                #print('====================')
+                            else:
+                                print("entity %s not found in obfuscatedd_statement: %s" %(entity, obfuscated_statement))
+
                     obfuscated_dataset.append(obfuscated_statement + "\t" + str(rows['label']))
                 except (IndexError):
+                    #print('got exception')
+                    #print(rows['tweet'])
                     obfuscated_dataset.append(rows['tweet']+ "\t" + str(rows['label']))
             put_dataset(os.path.join(os.path.dirname(args.original_data),
                                      os.path.basename(os.path.dirname(args.original_data)) +

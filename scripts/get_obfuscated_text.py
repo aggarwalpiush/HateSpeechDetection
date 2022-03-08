@@ -6,7 +6,7 @@ import random
 from nltk.tokenize import TweetTokenizer
 import operator
 import nltk
-from get_hatebase_terms import extract_terms_from_json, get_lexicons
+from get_hatebase_terms import extract_terms_from_json, get_lexicons, get_ranked_lexicons
 from get_interpretable_spans import get_span
 from get_diacritics import get_diacritics_dict
 from args import get_args
@@ -21,6 +21,11 @@ ps = PorterStemmer()
 de_tokenizer = SoMaJo("de_CMC")
 
 args = get_args()
+
+import spacy
+nlp_en = spacy.load("en_core_web_sm")
+
+
 
 
 
@@ -270,7 +275,8 @@ class Select_span(object):
                 for token in sent:
                     self.tokenized_input.append(token.text)
         else:
-            self.tokenized_input = TweetTokenizer().tokenize(inputtext)
+            tokenized_statement = [x.text for x in nlp_en(inputtext)]
+            self.tokenized_input = tokenized_statement
         self.input_length = len(self.tokenized_input)
 
     def apply_random(self):
@@ -358,16 +364,14 @@ class Select_span(object):
          hate speech sentences with top three priorities. Based on priority scores has been assigned to
          each token where priorities got weight of 0.5, 0.33, 0.17 respectively.
         '''
-        manual_dict_obfuscated_text = []
-
-        lexicon_list_with_score = get_lexicons(self.manual_dict)
-        ranked_lexicon_list = [x.split('\t')[0] for x in lexicon_list_with_score]
-
+        manual_lexicons = []
+        ranked_lexicon_list = get_ranked_lexicons(self.manual_dict)
         for lex in ranked_lexicon_list:
-            if ps.stem(lex) in self.inputtext.lower():
-                manual_dict_obfuscated_text.append(lex)
+            if lex in [ps.stem(x.lower()) for x in self.tokenized_input]:
+                manual_lexicons.append(lex)
                 break
-        return manual_dict_obfuscated_text
+        return manual_lexicons
+
 
 
     
