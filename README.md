@@ -54,5 +54,11 @@ export exp_name=.davidson_demo
 python explain.py --resume_snapshot models/${model_path} --method ${algo} --lm_path models/${lm_path} --batch_size 1 --start 0 --stop 100 --exp_name ${exp_name} --task davidson --explain_model lstm --nb_range 10 --sample_n 20 --dataset train
 ```
 
+For whole text file remove the stop tag
+
+```
+python explain.py --resume_snapshot models/${model_path} --method ${algo} --lm_path models/${lm_path} --batch_size 1 --exp_name ${exp_name} --task davidson --explain_model lstm --nb_range 10 --sample_n 20 --dataset train
+```
+
 Raise issues in case of any clarification or issue raised.
 
