@@ -31,6 +31,8 @@ Step 1:  train the LSTM model on your dataset and generate vocabulary pickle fil
 ```
 export model_path=models/davidson_lstm
 rm -rf vocab/*
+rm -rf models/*
+rm -rf outputs/davidson/soc_results/*
 python train.py --task davidson --save_path models/${model_path} --no_subtrees --lr 0.0005
 ```
 
