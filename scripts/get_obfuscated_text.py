@@ -348,9 +348,9 @@ class Select_span(object):
         '''
         hierarchical_obfuscated_text = {}
 
-        for lex, val in LEXICON_DICT.items():
-            if lex in self.tokenized_input:
-                hierarchical_obfuscated_text[lex]= val
+        for x in self.tokenized_input:
+            if ps.stem(x.lower()) in LEXICON_DICT.keys():
+                hierarchical_obfuscated_text[ps.stem(x.lower())]= val
         #print(hierarchical_obfuscated_text)
         if len(hierarchical_obfuscated_text.keys()) >= 1:
             hier_out = [min(hierarchical_obfuscated_text.items(), key=operator.itemgetter(1))[0]]

@@ -131,7 +131,8 @@ strategy = tf.distribute.MirroredStrategy()
 
 
 def cnn_attention_network(X_train, y_train, X_valid, y_valid, max_len, max_features, embed_size, embedding_matrix, lr=0.0, lr_d=0.0, spatial_dr=0.0, dense_units=128, conv_size=128, dr=0.2, patience=3):
-    file_path = f"../models/best_model_cnn_network.hdf5"
+    print(embedding_matrix[:2])
+    file_path = f"../models/davidson/best_model_cnn_network.hdf5"
     check_point = ModelCheckpoint(file_path, monitor="val_accuracy", verbose=1, save_best_only=True, mode="max")
     early_stop = EarlyStopping(monitor="val_accuracy", mode="max", patience=patience)
     with strategy.scope():
@@ -159,7 +160,7 @@ def cnn_attention_network(X_train, y_train, X_valid, y_valid, max_len, max_featu
 
 
 def cnn_lstm_network(X_train, y_train, X_valid, y_valid, max_len, max_features, embed_size, embedding_matrix, lr=0.0, lr_d=0.0, spatial_dr=0.0, dense_units=128, conv_size=128, dr=0.2, patience=3):
-    file_path = f"../models/best_model_cnn_lstm_network.hdf5"
+    file_path = f"../models/davidson/best_model_cnn_lstm_network.hdf5"
     check_point = ModelCheckpoint(file_path, monitor="val_accuracy", verbose=1,save_best_only=True, mode="max")
     early_stop = EarlyStopping(monitor="val_accuracy", mode="max", patience=patience)
     model = Sequential()
@@ -180,7 +181,7 @@ def cnn_lstm_network(X_train, y_train, X_valid, y_valid, max_len, max_features, 
 
 
 def lstm_network(X_train, y_train, X_valid, y_valid, max_len, max_features, embed_size, embedding_matrix, lr=0.0, lr_d=0.0, spatial_dr=0.0, dense_units=128, conv_size=128, dr=0.2, patience=3):
-    file_path = f"../models/best_model_lstm_network.hdf5"
+    file_path = f"../models/davidson/best_model_lstm_network.hdf5"
     check_point = ModelCheckpoint(file_path, monitor="val_accuracy", verbose=1,save_best_only=True, mode="max")
     early_stop = EarlyStopping(monitor="val_accuracy", mode="max", patience=patience)
     main_input = Input(shape = (max_len,),name='main_input')
@@ -201,7 +202,7 @@ def lstm_network(X_train, y_train, X_valid, y_valid, max_len, max_features, embe
 
 
 def cnn_deep_lstm(X_train, y_train, X_valid, y_valid, max_len, max_features, embed_size, embedding_matrix, lr=0.0, lr_d=0.0, spatial_dr=0.0, dense_units=128, conv_size=128, dr=0.2, patience=3):
-    file_path = f"../models/best_model_cnn_deep_lstm.hdf5"
+    file_path = f"../models/davidson/best_model_cnn_deep_lstm.hdf5"
     check_point = ModelCheckpoint(file_path, monitor="val_accuracy", verbose=1,save_best_only=True, mode="max")
     early_stop = EarlyStopping(monitor="val_accuracy", mode="max", patience=patience)
     main_input = Input(shape=(max_len,), dtype='int32', name='main_input')
@@ -260,7 +261,7 @@ def cnn_deep_lstm(X_train, y_train, X_valid, y_valid, max_len, max_features, emb
 
 
 def bilstm_network(X_train, y_train, X_valid, y_valid, max_len, max_features, embed_size, embedding_matrix, lr=0.0, lr_d=0.0, spatial_dr=0.0, dense_units=128, conv_size=128, dr=0.2, patience=3):
-    file_path = f"../models/best_model_bilstm_network.hdf5"
+    file_path = f"../models/davidson/best_model_bilstm_network.hdf5"
     check_point = ModelCheckpoint(file_path, monitor="val_accuracy", verbose=1,save_best_only=True, mode="max")
     early_stop = EarlyStopping(monitor="val_accuracy", mode="max", patience=patience)
     main_input = Input(shape=(max_len,), dtype='int32', name='main_input')
@@ -286,7 +287,7 @@ def bilstm_network(X_train, y_train, X_valid, y_valid, max_len, max_features, em
 
 
 def bilstm_attention_network(X_train, y_train, X_valid, y_valid, max_len, max_features, embed_size, embedding_matrix, lr=0.0, lr_d=0.0, spatial_dr=0.0, dense_units=128, conv_size=128, dr=0.2, patience=3):
-    file_path = f"../models/best_model_bilstm_attention_network.hdf5"
+    file_path = f"../models/davidson/best_model_bilstm_attention_network.hdf5"
     check_point = ModelCheckpoint(file_path, monitor="val_accuracy", verbose=1,save_best_only=True, mode="max")
     early_stop = EarlyStopping(monitor="val_accuracy", mode="max", patience=patience)
     with strategy.scope():
@@ -344,12 +345,16 @@ def build_matrix(embedding_path, tk, max_features):
 
 def create_embedding_matrix(embed, tk, max_features):
     if embed == 'fasttext':
+        print('It is fasttext')
         if args.use_de_tokenizer:
             return build_matrix('../embeddings/fasttext_german_twitter_100d.vec', tk, max_features)
         elif not os.path.exists('../embeddings/crawl-300d-2M.vec'):
             wget.download('https://dl.fbaipublicfiles.com/fasttext/vectors-english/crawl-300d-2M.vec.zip', '../embeddings')
             with zipfile.ZipFile('../embeddings/crawl-300d-2M.vec.zip', "r") as zip_ref:
                 zip_ref.extractall()
+            return build_matrix('../embeddings/crawl-300d-2M.vec', tk, max_features)
+        else:
+            print('nye wala return chala')
             return build_matrix('../embeddings/crawl-300d-2M.vec', tk, max_features)
     elif embed == 'glove':
         if not os.path.exists('../embeddings/glove.42B.300d.txt'):
@@ -426,7 +431,7 @@ def main():
 
 
     # CNN ATTENTION NETWORK
-
+    
     a = time.time()
     model = cnn_attention_network(X_train, y_train, X_valid, y_dev, max_len, max_features, embed_size, embedding_matrix,
                       lr=1e-3, lr_d=0, spatial_dr=0.1, dense_units=128, conv_size=128, dr=0.1, patience=4)
@@ -441,7 +446,7 @@ def main():
 
     logging.info("==========================TESTING==========================================")
     test_files(model, tk, 'cnn_attention_network')
-
+    '''
 
     # CNN LSTM NETWORK
 
@@ -510,7 +515,7 @@ def main():
     logging.info("==========================TESTING==========================================")
     test_files(model, tk, 'bilstm_network')
 
-
+    '''
 
 
 

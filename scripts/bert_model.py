@@ -292,7 +292,7 @@ if not args.only_test:
 
 logging.info("==========================TESTING==========================================")
 
-path = '../models/saved_weights_bert.pt'
+path = '../models/davidson/saved_weights_bert.pt'
 model.load_state_dict(torch.load(path))
 
 from glob import glob

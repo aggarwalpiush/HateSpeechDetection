@@ -32,10 +32,10 @@ def get_args():
     parser.add_argument('--hier_soc_ngram', type=int, default=1)
     parser.add_argument('--hier_soc_thld', type=float, default=-0.7)
     parser.add_argument('--span', type=str, default='random', choices=['original', 'random', 'random_POS', 'all',
-                                                                    'dictionary', 'hierarchical'])
+                                                                    'dictionary', 'hierarchical', 'manual_dict'])
     parser.add_argument('--obfuscation_strategy', type=str, default='camelcasing', choices=['original', 'camelcasing',
                         'snakecasing', 'spacing', 'voweldrop', 'random_masking', 'spelling', 'leetspeak', 'mathspeak',
-                        'reversal', 'firstCharacter'])
+                        'reversal', 'firstCharacter', 'phonetic', 'charcaterdrop', 'kebabcasing', 'diacritics'])
     parser.add_argument('--dev_data', type=str, default='../processed_data/en/davidson/dev.txt')
     parser.add_argument('--test_data', type=str, default='../processed_data/en/davidson/test.txt')
     parser.add_argument('--test_path', type=str, default='../processed_data/en/davidson')

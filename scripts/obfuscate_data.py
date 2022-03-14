@@ -40,13 +40,13 @@ OBFUSCATED_SPAN = [ 'random', 'random_POS', 'all', 'dictionary', 'hierarchical',
 
 #OBFUSCATED_SPAN = [ 'random_POS', 'all', 'dictionary', 'hierarchical']
 #OBFUSCATED_SPAN = ['dictionary']
-OBFUSCATED_SPAN = ['manual_dict']
+OBFUSCATED_SPAN = ['hierarchical']
 
 OBFUSCATED_STRATEGY = [ 'camelcasing',
                         'snakecasing', 'spacing', 'voweldrop', 'random_masking', 'spelling', 'leetspeak', 'mathspeak',
                         'reversal', 'firstCharacter', 'phonetic', 'charcaterdrop', 'kebabcasing', 'diacritics']
 
-#OBFUSCATED_STRATEGY = ['spacing', 'random_masking', 'leetspeak', 'mathspeak', 'dicritics']
+OBFUSCATED_STRATEGY = ['phonetic', 'charcaterdrop', 'kebabcasing', 'diacritics']
 
 #OBFUSCATED_STRATEGY = [ 'spelling']
 
@@ -55,7 +55,7 @@ def main():
     # select dataset
     original_dataset = get_dataset(args.original_data)
     copyfile(args.original_data, os.path.join(os.path.dirname(args.original_data),
-                                     os.path.basename(os.path.dirname(args.original_data)) + '_dev_dataoriginal_original_obfuscated.txt'))
+                                     os.path.basename(os.path.dirname(args.original_data)) + '_test_dataoriginal_original_obfuscated.txt'))
 
     for each_span in OBFUSCATED_SPAN:
         for each_strategy in OBFUSCATED_STRATEGY:
@@ -106,9 +106,9 @@ def main():
                     #print('got exception')
                     #print(rows['tweet'])
                     obfuscated_dataset.append(rows['tweet']+ "\t" + str(rows['label']))
-            put_dataset(os.path.join(os.path.dirname(args.original_data),
+            put_dataset(os.path.join(os.path.dirname(args.original_data),'complete_test_files', 'hierarchical_testdata',
                                      os.path.basename(os.path.dirname(args.original_data)) +
-                                     '_dev_data' + '_'.join([each_span, each_strategy]) + '_obfuscated.txt'),
+                                     '_test_data' + '_'.join([each_span, each_strategy]) + '_obfuscated.txt'),
                             obfuscated_dataset)
 
 if __name__ == '__main__':

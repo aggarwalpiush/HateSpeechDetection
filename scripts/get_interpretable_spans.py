@@ -4,7 +4,8 @@
 import codecs
 from nltk.corpus import stopwords
 from args import get_args
-
+from nltk.stem import PorterStemmer
+ps = PorterStemmer()
 
 args = get_args()
 
@@ -27,17 +28,18 @@ def get_span(filename, ngram = 2, threshold = -0.5):
                 filter_gram = []
                 for gr in gram:
                     if not gr == '<unk>' and not gr in STOP_WORDS and len(gr) > 2:
-                        filter_gram.append(gr)
+                        filter_gram.append(ps.stem(gr.lower()))
                         if len(filter_gram) <= ngram and len(filter_gram) > 0:
                             score = float(each_gspair[-1])
                             if score <= threshold:
                                 if " ".join(filter_gram).lower() in selected_terms.keys():
                                     selected_terms[" ".join(filter_gram).lower()].append(score)
-                                else:
+                                else: 
                                     selected_terms[(" ".join(filter_gram).lower())] = [score]
+    white_dict = {}
     for k in selected_terms.keys():
-        selected_terms[k] = min(selected_terms[k])
-    return selected_terms
+        white_dict[k] = min(selected_terms[k])
+    return white_dict
 
 
 if __name__ == "__main__":
