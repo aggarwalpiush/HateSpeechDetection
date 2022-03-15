@@ -338,8 +338,8 @@ class Select_span(object):
         else:
             lexicon_list = get_lexicons(self.dict_file)
         for lex in lexicon_list:
-            if lex in self.inputtext.lower():
-                dictionary_obfuscated_text.append(lex)
+            if ps.stem(lex.lower()) in [ps.stem(x.lower()) for x in self.tokenized_input]:
+                dictionary_obfuscated_text.append(ps.stem(lex.lower()))
         return [random.choice(dictionary_obfuscated_text)]
 
     def apply_hierarchical(self):
@@ -350,7 +350,7 @@ class Select_span(object):
 
         for x in self.tokenized_input:
             if ps.stem(x.lower()) in LEXICON_DICT.keys():
-                hierarchical_obfuscated_text[ps.stem(x.lower())]= val
+                hierarchical_obfuscated_text[ps.stem(x.lower())]= LEXICON_DICT[ps.stem(x.lower())]
         #print(hierarchical_obfuscated_text)
         if len(hierarchical_obfuscated_text.keys()) >= 1:
             hier_out = [min(hierarchical_obfuscated_text.items(), key=operator.itemgetter(1))[0]]

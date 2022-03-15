@@ -38,15 +38,15 @@ def put_dataset(obfuscated_path, data):
 
 OBFUSCATED_SPAN = [ 'random', 'random_POS', 'all', 'dictionary', 'hierarchical', 'manual_dict']
 
-#OBFUSCATED_SPAN = [ 'random_POS', 'all', 'dictionary', 'hierarchical']
+OBFUSCATED_SPAN = [  'all', 'dictionary', 'hierarchical', 'manual_dict']
 #OBFUSCATED_SPAN = ['dictionary']
-OBFUSCATED_SPAN = ['hierarchical']
+#OBFUSCATED_SPAN = ['hierarchical']
 
 OBFUSCATED_STRATEGY = [ 'camelcasing',
                         'snakecasing', 'spacing', 'voweldrop', 'random_masking', 'spelling', 'leetspeak', 'mathspeak',
                         'reversal', 'firstCharacter', 'phonetic', 'charcaterdrop', 'kebabcasing', 'diacritics']
 
-OBFUSCATED_STRATEGY = ['phonetic', 'charcaterdrop', 'kebabcasing', 'diacritics']
+#OBFUSCATED_STRATEGY = ['phonetic', 'charcaterdrop', 'kebabcasing', 'diacritics']
 
 #OBFUSCATED_STRATEGY = [ 'spelling']
 
@@ -90,12 +90,12 @@ def main():
                         else:
                             tokenized_statement = nlp_en(obfuscated_statement)
                             stemmed_statement = [ps.stem(x.text.lower()) for x in tokenized_statement]
-                            if entity in stemmed_statement:
+                            if ps.stem(entity.lower()) in stemmed_statement:
                                 #print("entity %s found in obfuscatedd_statement: %s" % (entity, obfuscated_statement))
                                 #print(stemmed_statement)
                                 #print(tokenized_statement[stemmed_statement.index(entity)])
                                 #print(obs.function_mapping[each_strategy](obs)[i])
-                                obfuscated_statement = obfuscated_statement.replace(tokenized_statement[stemmed_statement.index(entity)].text, obs.function_mapping[each_strategy](obs)[i])
+                                obfuscated_statement = obfuscated_statement.replace(tokenized_statement[stemmed_statement.index(ps.stem(entity.lower()))].text, obs.function_mapping[each_strategy](obs)[i])
                                 #print(obfuscated_statement)
                                 #print('====================')
                             else:
@@ -106,7 +106,7 @@ def main():
                     #print('got exception')
                     #print(rows['tweet'])
                     obfuscated_dataset.append(rows['tweet']+ "\t" + str(rows['label']))
-            put_dataset(os.path.join(os.path.dirname(args.original_data),'complete_test_files', 'hierarchical_testdata',
+            put_dataset(os.path.join(os.path.dirname(args.original_data),'complete_test_files',
                                      os.path.basename(os.path.dirname(args.original_data)) +
                                      '_test_data' + '_'.join([each_span, each_strategy]) + '_obfuscated.txt'),
                             obfuscated_dataset)
